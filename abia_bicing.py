@@ -1,5 +1,5 @@
 import random
-
+import numpy
 
 class Estacion(object):
     """
