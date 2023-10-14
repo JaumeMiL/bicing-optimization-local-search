@@ -15,7 +15,7 @@ class Estat:
         return distancia
         
     def moure_bicis(self,origen,arribada1,arribada2):
-        furgoneta = self.furgonetes[origen-1]
+        furgoneta = self.furgonetes[origen]
         
         if arribada2 is None:  # Si sol es va a una estació
             bicis_a_enviar = min(furgoneta.capacitat, self.estacions.lista_estaciones[origen].num_bicicletas_next)
