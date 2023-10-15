@@ -1,18 +1,19 @@
 import random
+import math
 from copy import deepcopy
 from abia_bicing import *
+from furgonetes import *
+
+
+def calcular_distancia_entre_estacions(estacio1: Estacion, estacio2: Estacion) -> int:
+    return abs(estacio1.coordX - estacio2.coordX) + abs(estacio1.coordY - estacio2.coordY)
+
 class Estat:
     def __init__(self, num_estacions, num_bicis, semilla, num_furgos):
         self.estacions = Estaciones(num_estacions, num_bicis, semilla)
         self.visitat = [False] * num_estacions
-        self.furgonetes = [Furgoneta(i) for i in range(1, num_furgos+1)]
+        self.furgonetes = [Furgonetes(i) for i in range(1, num_furgos+1)]
         self.guanyat = 0
-        
-    def calcular_distancia_entre_estacions(self, estacio1, estacio2):
-        x1, y1 = estacio1.coordX, estacio1.coordY
-        x2, y2 = estacio2.coordX, estacio2.coordY
-        distancia = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-        return distancia
         
 def moure_bicis(self, origen, arribada1, arribada2=None):
     furgoneta = self.furgonetes[origen]
@@ -77,12 +78,3 @@ def moure_bicis(self, origen, arribada1, arribada2=None):
 
 
 
-class Furgoneta:
-    def __init__(self, origen):
-        self.origen = origen
-        self.destins = []  # Llista de destins
-        self.bicis_per_desti = {}  # Diccionari per saber quantes bicis es deixen a cada destí
-        self.capacitat = 30
-
-        
-    
