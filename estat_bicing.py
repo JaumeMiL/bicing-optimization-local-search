@@ -27,7 +27,8 @@ def moure_bicis(self, origen, arribada1, arribada2=None):
 
     # Sol es va a una estació
     if arribada2 is None:
-        bicis_a_enviar = min(furgoneta.capacitat, self.estacions.lista_estaciones[origen].num_bicicletas_next)
+        demanda_arribada1 = self.estacions.lista_estaciones[arribada1].demanda
+        bicis_a_enviar = min(furgoneta.capacitat, self.estacions.lista_estaciones[origen].num_bicicletas_next, demanda_arribada1)
         self.guanyat += benefici_o_cost(self.estacions.lista_estaciones[arribada1], bicis_a_enviar)
         
         # Actualitzem la furgoneta i estació
@@ -45,9 +46,11 @@ def moure_bicis(self, origen, arribada1, arribada2=None):
         demanda_arribada1 = self.estacions.lista_estaciones[arribada1].demanda
         demanda_arribada2 = self.estacions.lista_estaciones[arribada2].demanda
         
-        bicis_a_enviar_arribada1 = min(furgoneta.capacitat, demanda_arribada1)
+        bicis_a_enviar_arribada1 = min(furgoneta.capacitat, self.estacions.lista_estaciones[origen].num_bicicletas_next, demanda_arribada1)
         bicis_a_enviar_arribada2 = min(furgoneta.capacitat - bicis_a_enviar_arribada1, demanda_arribada2)
         
+        
+        #Actualitzar diners guanyats
         self.guanyat += benefici_o_cost(self.estacions.lista_estaciones[arribada1], bicis_a_enviar_arribada1)
         self.guanyat += benefici_o_cost(self.estacions.lista_estaciones[arribada2], bicis_a_enviar_arribada2)
         
