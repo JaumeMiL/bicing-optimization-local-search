@@ -2,7 +2,7 @@ import random
 import math
 from copy import deepcopy
 from abia_bicing import *
-from furgonetes import *
+from Furgonetes import *
 
 
 def calcular_distancia_entre_estacions(estacio1: Estacion, estacio2: Estacion) -> int:
