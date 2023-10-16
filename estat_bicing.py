@@ -70,7 +70,7 @@ def moure_bicis(self, origen, arribada1, arribada2=None):
         self.guanyat -= ((bicis_a_enviar_arribada1 + 9) // 10)*distancia1
         self.guanyat -= ((bicis_a_enviar_arribada2 + 9) // 10)*distancia2
 
-    # Asegurarse de actualizar los beneficios y costos
+
     self.visitat[origen] = True
 
         
