@@ -6,9 +6,21 @@ from bicing_estacions import *
 from bicing_furgonetes import *
 from bicing_parametres import *
 
+class Estat(object):
+    def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones):
+        self.params = parametres
+        self.flota =  flota
+        self.estacions = estacions
+    
+    #Copia
 
-def calcular_distancia_entre_estacions(estacio1: Estacion, estacio2: Estacion) -> int:
-    return abs(estacio1.coordX - estacio2.coordX) + abs(estacio1.coordY - estacio2.coordY)
+    #Repr
+
+    #Genera Accions
+
+    #Aplica accions
+
+    #Heurística
 
 class Estat:
     def __init__(self, num_estacions, num_bicis, semilla, num_furgos):
