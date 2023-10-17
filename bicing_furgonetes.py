@@ -3,9 +3,6 @@ import random
 from bicing_estacions import *
 from bicing_estat import *
 
-def distancia_estacions(est1: Estacion, est2: Estacion) -> int:
-    distancia = abs(est1.coordX - est2.coordX) + abs(est1.coordY - est2.coordY)
-    return distancia
 
 class Furgonetes(object):
 

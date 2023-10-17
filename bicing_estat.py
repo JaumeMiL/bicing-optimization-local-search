@@ -86,6 +86,12 @@ def moure_bicis(self, origen, arribada1, arribada2=None):
 
     # Asegurarse de actualizar los beneficios y costos
     self.visitat[origen] = True
+    
+
+
+def apply_action(self, action: Operadors) -> StateRepresentation:
+    if isinstance(action,Carregar_bicis):
+        Carregar_bicis.execut
 
         
         
