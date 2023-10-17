@@ -7,10 +7,6 @@ def distancia_estacions(est1: Estacion, est2: Estacion) -> int:
     distancia = abs(est1.coordX - est2.coordX) + abs(est1.coordY - est2.coordY)
     return distancia
 
-def distancia_estacions(est1: Estacion, est2: Estacion) -> int:
-    distancia = abs(est1.coordX - est2.coordX) + abs(est1.coordY - est2.coordY)
-    return distancia
-
 class Furgonetes(object):
 
     def __init__(self, origen: Estacion, bicis_furgo: int, primera_est: Estacion = None, bicis_primera: int = 0, segona_est: Estacion = None, bicis_segona: int = 0):
