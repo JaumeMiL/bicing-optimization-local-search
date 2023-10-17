@@ -1,10 +1,10 @@
-import random
-import math
 from copy import deepcopy
+from typing import List, Generator, Set 
 
 from bicing_estacions import *
 from bicing_furgonetes import *
 from bicing_parametres import *
+from distancia_estacions import calcular_distancia
 
 class Estat(object):
     def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones):
@@ -54,7 +54,7 @@ def moure_bicis(self, origen, arribada1, arribada2=None):
         self.estacions.lista_estaciones[arribada1].num_bicicletas_no_usadas += bicis_a_enviar
         
         # Calcular cost pr distancia
-        distancia = self.calcular_distancia_entre_estacions(self.estacions.lista_estaciones[origen], self.estacions.lista_estaciones[arribada1])
+        distancia = self.calcular_distancia(self.estacions.lista_estaciones[origen], self.estacions.lista_estaciones[arribada1])
         self.guanyat -= ((bicis_a_enviar + 9) // 10)*distancia
 
     else:  # Si es va a dos estacions
@@ -79,8 +79,8 @@ def moure_bicis(self, origen, arribada1, arribada2=None):
         self.estacions.lista_estaciones[arribada2].num_bicicletas_no_usadas += bicis_a_enviar_arribada2
         
         # Calcular cost per distancia
-        distancia1 = self.calcular_distancia_entre_estacions(self.estacions.lista_estaciones[origen], self.estacions.lista_estaciones[arribada1])
-        distancia2 = self.calcular_distancia_entre_estacions(self.estacions.lista_estaciones[arribada1], self.estacions.lista_estaciones[arribada2])
+        distancia1 = self.calcular_distancia(self.estacions.lista_estaciones[origen], self.estacions.lista_estaciones[arribada1])
+        distancia2 = self.calcular_distancia(self.estacions.lista_estaciones[arribada1], self.estacions.lista_estaciones[arribada2])
         self.guanyat -= ((bicis_a_enviar_arribada1 + 9) // 10)*distancia1
         self.guanyat -= ((bicis_a_enviar_arribada2 + 9) // 10)*distancia2
 

@@ -2,6 +2,7 @@ import random
 
 from bicing_estacions import *
 from bicing_estat import *
+from distancia_estacions import *
 
 
 class Furgonetes(object):

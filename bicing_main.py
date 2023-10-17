@@ -1,5 +1,4 @@
 import random
-
 from aima.search import hill_climbing
 
 from bicing_estacions import Estacio, Estacions
