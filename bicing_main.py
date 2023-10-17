@@ -3,7 +3,7 @@ import random
 from aima.search import hill_climbing
 
 from bicing_estacions import Estacio, Estacions
-from bicing_furgonetes import Furgoneta, Furgonetes
+from bicing_furgonetes import Furgonetes
 
 from bicing_parametres import Parametres
 from bicing_problem import BicingProblem
