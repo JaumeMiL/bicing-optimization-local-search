@@ -1,7 +1,7 @@
 from bicing_estacions import Estacio, Estacions
 from bicing_furgonetes import Furgoneta, Furgonetes
 
-class Operador():
+class BicingOperator():
     pass
 
 #Carregar bicis a la furgoneta
