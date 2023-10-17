@@ -15,14 +15,10 @@ class BicingProblem(Problem):
         return state.genera_accions()
 
     def result(self, state: Estat, action: BicingOperator) -> Estat:
-        try:
-            furgo = state.ruta[action.num_furgo]
-        except:
-            furgo = state.ruta[action.num_furgo1]
         return state.aplica_operador(action)
 
     def value(self, state: Estat) -> float:
-        return state.h()
+        return state.heuristic()
 
     def goal_test(self, state: Estat) -> bool:
         return False
