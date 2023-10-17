@@ -1,5 +1,5 @@
 from bicing_estacions import Estacio, Estacions
-from bicing_furgonetes import Furgoneta, Furgonetes
+from bicing_furgonetes import Furgonetes
 
 class BicingOperator():
     pass
