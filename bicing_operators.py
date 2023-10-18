@@ -194,7 +194,8 @@ class Canviar_Estacio_Carr(Operadors):
     def __repr__(self) -> str:
         return f"Canvia l'estació d'origen d'una furgoneta {self.estacio_origen_actual} a {self.nova_estacio_origen}"
 
-    def executa(self, estacions, furgonetes):
+    def executa(self, estacions, flota):
+        # tenim que flota és el 
         # Primer de tot hauríem d'obtenir la furgoneta i, en consequència la seva estació d'origen.
         # Si la furgoneta ja està carregada, l'haurem de descarregar a la primera estació d'origen.
         # Llavors l'estació d'origen d'aquesta furgoneta ha de ser modificada per la nova estació d'origen
