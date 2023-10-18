@@ -10,17 +10,17 @@ from bicing_furgonetes import Furgonetes
 from bicing_operators import *
 
 class Estat(object):
-    def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones, estacions_origen: set()):
+    def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones, estacions_origen: set() = None):
         self.params = parametres
         self.flota =  flota
         self.estacions = estacions
         self.estacions_origen = estacions_origen
 
     def copy(self) -> Estat:
-        return StateRepresentation(self.params, self.v_p.copy(), self.free_spaces.copy())
+        return Estat(self.params, self.estacions.copy(), self.flota.copy(), self.estacions_origen.copy())
 
     def __repr__(self) -> str:
-        return f"v_p={str(self.v_p)} | free_spaces={self.free_spaces} | {self.params}"
+        return f"estacions={str(self.estacions)} | flota={self.flota} | {self.params}"
 
     def generate_actions(self):
         # The list to store potential actions
