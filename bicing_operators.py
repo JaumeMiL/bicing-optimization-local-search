@@ -1,5 +1,6 @@
-from bicing_estacions import Estacio, Estacions
+
 from bicing_furgonetes import Furgonetes
+from bicing_estacions import Estacion
 
 class Operadors:
     estaciones_visitades = set()
@@ -19,11 +20,8 @@ class Operadors:
         return bicis_a_enviar_desti1, bicis_a_enviar_desti2
     
     @staticmethod
-    def calcular_distancia(estacions, estacio_a, estacio_b):
-        estacio_a_coords = (estacions.lista_estaciones[estacio_a].x, estacions.lista_estaciones[estacio_a].y)
-        estacio_b_coords = (estacions.lista_estaciones[estacio_b].x, estacions.lista_estaciones[estacio_b].y)
-        
-        return abs(estacio_a_coords[0] - estacio_b_coords[0]) + abs(estacio_a_coords[1] - estacio_b_coords[1])
+    def calcular_distancia(estacio_a: Estacion, estacio_b: Estacion) -> int:
+        return (abs(estacio_a.coordX - estacio_b.coordX) + abs(estacio_a.coordY - estacio_b.coordY))
 
 
 class CarregarBicis(Operadors):

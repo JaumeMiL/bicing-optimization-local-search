@@ -34,11 +34,11 @@ class Furgonetes(object):
 
         # si existeix la primera estació calculem el cost de la gasolina d'anar-hi
         if primera_est is not None:
-            cost_gas += ((bicis_furgo + 9)//10) * distancia_estacions(origen, primera_est)/1000
+            cost_gas += ((bicis_furgo + 9)//10) * calcular_distancia(origen, primera_est)/1000
 
             # si existeix la segona estació calculem el cost de la gasolina d'anar-hi
             if segona_est is not None:
-                cost_gas += ((bicis_furgo - self.bicis_primera + 9)//10) * distancia_estacions(primera_est, segona_est)/1000
+                cost_gas += ((bicis_furgo - self.bicis_primera + 9)//10) * calcular_distancia(primera_est, segona_est)/1000
 
         return cost_gas
 
