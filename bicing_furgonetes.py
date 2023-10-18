@@ -7,14 +7,14 @@ from distancia_estacions import *
 
 class Furgonetes(object):
 
-    def __init__(self, origen: Estacion, bicis_furgo: int, primera_est: Estacion = None, bicis_primera: int = 0, segona_est: Estacion = None, bicis_segona: int = 0):
+    def __init__(self, origen: Estacion, bicis_carregades: int = 0, primera_est: Estacion = None, bicis_primera: int = 0, segona_est: Estacion = None, bicis_segona: int = 0):
         self.origen = origen  # Estació on carrega
         self.primera_est = primera_est  # Primera estació
         self.segona_est = segona_est  # Segona estació
-        self.bicis_furgo = bicis_furgo  # Nombre de bicis que porta a sobre
+        self.bicis_carregades = bicis_carregades  
         self.bicis_primera = bicis_primera  # Nombre de bicis que es deixen a la primera estació
         self.bicis_segona = bicis_segona  # Nombre de bicis que es deixen a la segona estació
-        capacitat_maxima = 30 #capacitat màxima de la furgoneta
+        self.capacitat = 30 #capacitat màxima de la furgoneta
 
         if primera_est is None:
             assert bicis_primera == 0  # Si no hi ha primera estació, la quantitat de bicis ha de ser 0

@@ -39,7 +39,8 @@ class CarregarBicis(Operadors):
         bicis_a_enviar_desti1, bicis_a_enviar_desti2 = self._calcular_bicis_a_enviar(furgoneta, estacions, self.estacio_origen, self.estacio_desti, self.estacio_desti2)
         
         # Actualitzar la furgoneta i l'estació d'origen en cas que no hi hagi segona estació
-        furgoneta.capacitat -= (bicis_a_enviar_desti1 + bicis_a_enviar_desti2)
+        furgoneta.bicis_carregades += (bicis_a_enviar_desti1 + bicis_a_enviar_desti2)
+        furgoneta.origen = self.estacio_origen
         estacions.lista_estaciones[self.estacio_origen].num_bicicletas_next -= bicis_a_enviar_desti1
         
         #Actualitzar l'estacó d'origen en el cas de que si que n'hi hagi
@@ -75,13 +76,13 @@ class DescarergarBicis(Operadors):
             estacions.lista_estaciones[self.estacio_desti2].num_bicicletas_no_usadas += bicis_a_enviar_desti2
 
         #Actualitzar la furgoneta i les estacions destí
-        furgoneta.destins.append(self.estacio_desti)
-        furgoneta.bicis_per_desti[self.estacio_desti] = bicis_a_enviar_desti1
+        furgoneta.primera_est = self.estacio_desti
+        furgoneta.bicis_primera = bicis_a_enviar_desti1
         estacions.lista_estaciones[self.estacio_desti].num_bicicletas_no_usadas += bicis_a_enviar_desti1
         
         if self.estacio_desti2:
-            furgoneta.destins.append(self.estacio_desti2)
-            furgoneta.bicis_per_desti[self.estacio_desti2] = bicis_a_enviar_desti2
+            furgoneta.segona_est = self.estacio_desti2
+            furgoneta.bicis_segona = bicis_a_enviar_desti2
             estacions.lista_estaciones[self.estacio_desti2].num_bicicletas_no_usadas += bicis_a_enviar_desti2
 
             
