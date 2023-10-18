@@ -184,29 +184,46 @@ class Eliminar_Seg_Est(Operadors):
 
 
 
-
-#Nou operador: canviar estació d'origen (de càrrega) d'una furgoneta
 class Canviar_Estacio_Carr(Operadors):
-    def __init__(self, estacio_origen_actual: int, nova_estacio_origen: int):
+    def __init__(self, estacio_origen_actual: Estacion, nova_estacio_origen: Estacion):
         self.estacio_origen_actual = estacio_origen_actual
         self.nova_estacio_origen = nova_estacio_origen
 
     def __repr__(self) -> str:
-        return f"Canvia l'estació d'origen d'una furgoneta {self.estacio_origen_actual} a {self.nova_estacio_origen}"
+        return f"Canvia l'estació d'origen de la furgoneta de {self.estacio_origen_actual} a {self.nova_estacio_origen}"
 
     def executa(self, estacions, flota):
-        # tenim que flota és el 
-        # Primer de tot hauríem d'obtenir la furgoneta i, en consequència la seva estació d'origen.
-        # Si la furgoneta ja està carregada, l'haurem de descarregar a la primera estació d'origen.
-        # Llavors l'estació d'origen d'aquesta furgoneta ha de ser modificada per la nova estació d'origen
-
-
-#Nou operador: suprimir furgoneta
-class Esborrar_Furgoneta(Operadors):
-    #Si la furgoneta està carregada, l'haurem de descarregar a l'estació d'origen.
-    #Només podem esborrar
-
-#Nou operador: intercanviar origen de dues furgonetes
-class Intercanviar_Origen_Furgonetes(Operadors):
-
+        #EI! NO ESTIC SEGUR DE QUE AQUEST FOR SIGUI NECESSARI O SI JA TENIM LA FURGONETA SELECCIONADA
+        #EN CAS DE QUE SIGUI AIXÍ, ES POT ESBORRAR
         
+        for furgoneta in flota: 
+            if furgoneta.origen == self.estacio_origen_actual:
+                # Comprova si la furgoneta està carregada, per si ho està descarregar-la
+                if furgoneta.bicis_carregades > 0:
+                    estacions.lista_estaciones[self.estacio_origen_actual].num_bicicletas_next += furgoneta.bicis_carregades 
+                    furgoneta.bicis_carregades = furgoneta.bicis_primera = furgoneta.bicis_segona = 0
+                    furgoneta.primera_est = furgoneta.segona_est = None
+                
+                # Canvia l'estació d'origen de la furgoneta
+                furgoneta.origen = self.nova_estacio_origen
+
+                # Haurem de carregar la furgoneta novament però això no es fa en aquesta funció 
+                # sinó que després d'aquesta fucnió sempre es pot cridar a carregar un altre cop
+                break
+
+
+class Esborrar_Furgoneta(Operadors):
+    def __init__(self, estacio_origen: Estacion):
+        self.estacio_origen = estacio_origen
+
+    def __repr__(self) -> str:
+        return f"Suprimeix la furgoneta amb estació d'origen {self.estacio_origen}"
+
+    def executa(self, estacions, flota):
+        for furgoneta in flota:
+            if furgoneta.origen == self.estacio_origen:
+                if furgoneta.bicis_carregades > 0:
+                    estacions.lista_estaciones[self.estacio_origen_actual].num_bicicletas_next += furgoneta.bicis_carregades 
+                    furgoneta.bicis_carregades = furgoneta.bicis_primera = furgoneta.bicis_segona = 0
+                    furgoneta.primera_est = furgoneta.segona_est = None
+                flota.remove(furgoneta)  # Elimina la furgoneta de la llista de furgonetes
