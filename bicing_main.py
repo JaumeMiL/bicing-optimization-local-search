@@ -12,7 +12,6 @@ from bicing_estat import Estat
 # Funcions de generació dels diferents estats inicials
 
 
-#42
 suma_h = 0
 iter = 1
 for i in range(iter):
