@@ -1,24 +1,26 @@
+import random
+import math
+import copy
 from copy import deepcopy
-from typing import List, Generator, Set 
+from typing import List, Set, Generator
 
-from bicing_estacions import *
-from bicing_furgonetes import *
-from bicing_parametres import *
-from distancia_estacions import calcular_distancia
+from bicing_estacions import Estacion, Estaciones
+from bicing_parametres import Parametres
+from bicing_furgonetes import Furgonetes
+from bicing_operators import *
 
 class Estat(object):
-    def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones):
+    def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones, estacions_origen: set()):
         self.params = parametres
         self.flota =  flota
         self.estacions = estacions
-    from bicing_operators import CarregarBicis, DescarergarBicis, Intercanviar_Estacions, Calcular_Guanys
-from bicing_estacions import Estacions
-from bicing_furgonetes import Furgonetes
+        self.estacions_origen = estacions_origen
 
-class BicingState:
-    def __init__(self, estacions: Estacions, furgonetes: Furgonetes):
-        self.estacions = estacions
-        self.furgonetes = furgonetes
+    def copy(self) -> Estat:
+        return StateRepresentation(self.params, self.v_p.copy(), self.free_spaces.copy())
+
+    def __repr__(self) -> str:
+        return f"v_p={str(self.v_p)} | free_spaces={self.free_spaces} | {self.params}"
 
     def generate_actions(self):
         # The list to store potential actions
@@ -74,37 +76,82 @@ class BicingState:
         
         # Devolver el nuevo estado
         return BicingState(new_estacions, new_furgonetes)
-# Test:
-# estacions = ...  # Load Estacions instance
-# furgonetes = ...  # Load Furgonetes instance
-# state = BicingState(estacions, furgonetes)
-# actions = state.generate_actions()
-
-    #Copia
-
-    #Repr
-
-    #Genera Accions
-
-    #Aplica accions
-
-    #Heurística
-
-class Estat:
-    def __init__(self, num_estacions, num_bicis, semilla, num_furgos):
-        self.estacions = Estaciones(num_estacions, num_bicis, semilla)
-        self.visitat = [False] * num_estacions
-        self.furgonetes = [Furgonetes(i) for i in range(1, num_furgos+1)]
-        self.guanyat = 0
     
+    def heuristica:
+    """
+    class Calcular_Guanys(Operadors):
+    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int = None):
+        self.estacio_origen = estacio_origen
+        self.estacio_desti = estacio_desti
+        self.estacio_desti2 = estacio_desti2
+        
+    def __repr__(self) -> str:
+        if self.estacio_desti2:
+            return f"Calcular costos desde l'estació {self.estacio_origen} fins {self.estacio_desti}"
+        else:   
+            return f"Calcular costos desde l'estació {self.estacio_origen} fins {self.estacio_desti} i {self.estacio_desti2}"
 
-
-def apply_action(self, action: Operadors) -> StateRepresentation:
-    if isinstance(action,Carregar_bicis):
-        Carregar_bicis.execut
-
+    def executa(self, estacions, furgonetes):
+        furgoneta = furgonetes[self.estacio_origen]
+        bicis_a_enviar_desti1, bicis_a_enviar_desti2 = self.calcular_bicis_a_enviar(furgoneta, estacions, self.estacio_origen, self.estacio_desti, self.estacio_desti2)
+        
+        # Costos per distancia
+        distancia1 = self.calcular_distancia(estacions, self.estacio_origen, self.estacio_desti)/1000
+        cost_distancia1 = -((bicis_a_enviar_desti1 + 9) // 10) * distancia1
+        
+        # Si hi ha segon destí
+        if self.estacio_desti2:
+            distancia2 = self.calcular_distancia(estacions, self.estacio_desti, self.estacio_desti2)/1000
+            cost_distancia2 = -((bicis_a_enviar_desti2 + 9) // 10) * distancia2 
+        else:
+            cost_distancia2 = 0
+        
+        # Benefici per apropar bicis a la demanda
+        estacio_desti_obj = estacions.lista_estaciones[self.estacio_desti]
+        benefici_desti = max(0, estacio_desti_obj.demanda - estacio_desti_obj.num_bicicletas_next)
+        
+        # Si hi ha segon destí
+        if self.estacio_desti2:
+            estacio_desti2_obj = estacions.lista_estaciones[self.estacio_desti2]
+            benefici_desti2 = max(0, estacio_desti2_obj.demanda - estacio_desti2_obj.num_bicicletas_next)
+        else:
+            benefici_desti2 = 0
+            
+        # Costos per apropar bicis a la demanda
+        estacio_desti_obj = estacions.lista_estaciones[self.estacio_desti]
+        cost_desti = min(0, estacio_desti_obj.demanda - estacio_desti_obj.num_bicicletas_next)
+        
+        # Si hi ha segon destí
+        if self.estacio_desti2:
+            estacio_desti2_obj = estacions.lista_estaciones[self.estacio_desti2]
+            benefici_desti2 = min(0, estacio_desti2_obj.demanda - estacio_desti2_obj.num_bicicletas_next)
+        else:
+            cost_desti2 = 0
+            
         
         
+        #Guanys totals
+        guanys_totals = cost_distancia1 + cost_distancia2 + benefici_desti + benefici_desti2 + cost_desti + cost_desti2
+        
+        return guanys_totals"""
 
+def generate_initial_state(params: ProblemParameters) -> StateRepresentation:
+    assert (params.p_max <= params.c_max)
 
+    v_p = [c_i for c_i in range(params.c_max)]
+    return StateRepresentation(params, v_p)
 
+def generate_initial_state_greedy(params: Parametres) -> Estat:
+    assert (params.p_max <= params.c_max)
+    c_i = 0
+    h_c_i = params.h_max
+    v_p = []
+    for p_i in range(params.p_max):
+        h_p_i = params.v_h[p_i]
+        if h_p_i > h_c_i:  # Paquet no cap en contenidor c_i
+            c_i = c_i + 1  # Contenidor nou
+            h_c_i = params.h_max - h_p_i
+        else:
+            h_c_i = h_c_i - h_p_i
+        v_p.append(c_i)
+    return StateRepresentation(params, v_p)
