@@ -145,6 +145,7 @@ class Calcular_Guanys(Operadors):
     
     
         
+
 class Intercanviar_Estacions(Operadors):
     def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int = None):
         self.estacio_origen = estacio_origen
@@ -157,4 +158,54 @@ class Intercanviar_Estacions(Operadors):
     def executa(self):
         assert self.estacio_desti2 is not None
         self.estacio_desti, self.estacio_desti2 = self.estacio_desti2, self.estacio_desti
+
+
+
+
+#Nou operador: eliminar segona estació de descàrrega
+class Eliminar_Seg_Est(Operadors):
+    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int = None):
+        self.estacio_origen = estacio_origen
+        self.estacio_desti = estacio_desti
+        self.estacio_desti2 = estacio_desti2
+    
+    def __repr__(self) -> str:
+        return f"Elimina la segona estació ({self.estacio_desti2} de la ruta."
+    
+    def executa(self, estacions, furgonetes):
+        furgoneta = flota[furgoneta.estacio_origen] #MIRAR AIXÒ
+        if furgoneta.segona_est is not None:
+            #declaro una variable temporal per saber quantes bicicletes s'havien d'enviar a l'est2
+            var_temp_bicis_desti2 = furgoneta.bicis_segona
+            furgoneta.bicis_segona = 0 #reinicio a 0 les que havia d'enviar
+            #les bicis que hi haurà a l'est_origen seran les que ja havia agafat
+            estacions.lista_estaciones[self.estacio_desti2].num_bicicletas_next += var_temp_bicis_desti2
+        self.estacio_desti2 = None
+
+
+
+
+#Nou operador: canviar estació d'origen (de càrrega) d'una furgoneta
+class Canviar_Estacio_Carr(Operadors):
+    def __init__(self, estacio_origen_actual: int, nova_estacio_origen: int):
+        self.estacio_origen_actual = estacio_origen_actual
+        self.nova_estacio_origen = nova_estacio_origen
+
+    def __repr__(self) -> str:
+        return f"Canvia l'estació d'origen d'una furgoneta {self.estacio_origen_actual} a {self.nova_estacio_origen}"
+
+    def executa(self, estacions, furgonetes):
+        # Primer de tot hauríem d'obtenir la furgoneta i, en consequència la seva estació d'origen.
+        # Si la furgoneta ja està carregada, l'haurem de descarregar a la primera estació d'origen.
+        # Llavors l'estació d'origen d'aquesta furgoneta ha de ser modificada per la nova estació d'origen
+
+
+#Nou operador: suprimir furgoneta
+class Esborrar_Furgoneta(Operadors):
+    #Si la furgoneta està carregada, l'haurem de descarregar a l'estació d'origen.
+    #Només podem esborrar
+
+#Nou operador: intercanviar origen de dues furgonetes
+class Intercanviar_Origen_Furgonetes(Operadors):
+
         
