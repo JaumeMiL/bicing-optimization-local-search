@@ -14,23 +14,38 @@ class Estat(object):
         
     def genera_accions_hill_climbing(self):
         
-        # Para cada estació, intentar carregar bicicletas a una furgoneta
-        for estacio_origen in range(len(self.estacions.lista_estaciones)):
-            for estacio_desti1 in range(len(self.estacions.lista_estaciones)):
-                if estacio_origen != estacio_desti1:
-                    yield CarregarBicis(estacio_origen, estacio_desti1, None)
-                    for estacio_desti2 in range(len(self.estacions.lista_estaciones)):
-                        if estacio_desti2 != estacio_origen and estacio_desti2 != estacio_desti1:
-                            yield CarregarBicis(estacio_origen, estacio_desti1, estacio_desti2)
+        # Set per a verificar si una estació ja ha estat assignada a una furgoneta
+                
+        estacions_assignades = set()
+        
+        for furgoneta in self.flota: 
+            if furgoneta.origen is not None:
+                estacions_assignades.add(furgoneta.origen)  
 
-        # Para cada furgoneta, intentar descarregar bicicletes en una o dos estacions
+
+        
+        # Per cada estació, intentar carregar bicicletes a una furgoneta
+        for estacio_origen in range(len(self.estacions.lista_estaciones)):
+            if estacio_origen not in estacions_assignades:  # Comprovació una furgoneta per origen
+                for furgoneta in self.flota:
+                    if not furgoneta.viatge_fet: #comprovació que una furgoneta sol fagi un viatge
+                        for estacio_desti1 in range(len(self.estacions.lista_estaciones)):
+                            if estacio_origen != estacio_desti1:
+                                yield CarregarBicis(estacio_origen, estacio_desti1, None)
+                                for estacio_desti2 in range(len(self.estacions.lista_estaciones)):
+                                    if estacio_desti2 != estacio_origen and estacio_desti2 != estacio_desti1:
+                                        yield CarregarBicis(estacio_origen, estacio_desti1, estacio_desti2)
+
+        # Per cada furgoneta, descarrega en els seus destins
         for furgoneta in self.flota:
-            if furgoneta.bicis_carregades > 0:
-                for estacio_desti1 in range(len(self.estacions.lista_estaciones)):
-                    yield DescarregarBicis(furgoneta.origen, estacio_desti1, None)
-                    for estacio_desti2 in range(len(self.estacions.lista_estaciones)):
-                        if estacio_desti2 != estacio_desti1:
-                            yield DescarregarBicis(furgoneta.origen, estacio_desti1, estacio_desti2)
+            if not furgoneta.viatge_fet:  # comprovació de que una furgoneta sol fagi un viatje
+                if furgoneta.bicis_carregades > 0:
+                    # Descarrega primer destí
+                    yield DescarregarBicis(furgoneta.origen, furgoneta.primera_est, None)
+                    # Si hi ha un egon destí
+                    if furgoneta.segona_est is not None:
+                        yield DescarregarBicis(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+
 
         # Per cada furgoneta amb dos destins, intentar intercanviar els destins
         for furgoneta in self.flota:
@@ -41,16 +56,21 @@ class Estat(object):
         for furgoneta in self.flota:
             if furgoneta.segona_est is not None:
                 yield Eliminar_Seg_Est(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+                
+        
+        # Per cada furgoneta i estació, intentar canviar l'estació de origen de la furgoneta
+        for furgoneta in self.flota:
+            for estacio_nova in range(len(self.estacions.lista_estaciones)):
+                if estacio_nova != furgoneta.origen and estacio_nova not in estacions_assignades:
+                    yield Canviar_Estacio_Carr(furgoneta.origen, estacio_nova)
 
         # Intentar eliminar cada furgoneta
         for furgoneta in self.flota:
-            yield Esborrar_Furgoneta(furgoneta.origen)
+            if not furgoneta.viatge_fet:
+                yield Esborrar_Furgoneta(furgoneta.origen)
 
-        # Per cada furgoneta i estación, intentar canviar l'estació de origen de la furgoneta
-        for furgoneta in self.flota:
-            for estacio_nova in range(len(self.estacions.lista_estaciones)):
-                if estacio_nova != furgoneta.origen:
-                    yield Canviar_Estacio_Carr(furgoneta.origen, estacio_nova)
+        
+
 
 
     def apply_action(self, action: Operadors):
@@ -86,8 +106,6 @@ class Estat(object):
             if estacio_desti2:
                 new_estacions.lista_estaciones[estacio_desti2].num_bicicletas_no_usadas += bicis_a_enviar_desti2
         
-            #S'HA DE mARCAR Q JA S'HA SORTIT D'AQUEST ORIGEN I COMPROVAR QUAN ES GENERIN ACCIONS CREC
-            
             
         elif isinstance(action, DescarregarBicis):
             estacio_origen = action.estacio_origen 
@@ -117,11 +135,15 @@ class Estat(object):
             furgoneta.primera_est = estacio_desti
             furgoneta.bicis_primera = bicis_a_enviar_desti1
             new_estacions.lista_estaciones[estacio_desti].num_bicicletas_no_usadas += bicis_a_enviar_desti1
+
         
             if estacio_desti2:
                 furgoneta.segona_est = estacio_desti2
                 furgoneta.bicis_segona = bicis_a_enviar_desti2
                 new_estacions.lista_estaciones[estacio_desti2].num_bicicletas_no_usadas += bicis_a_enviar_desti2
+            
+            #marco el viatge com a fet
+            furgoneta.viatge_fet = True 
 
             
         elif isinstance(action, Intercanviar_Estacions):
@@ -236,3 +258,4 @@ class Estat(object):
             guanys_totals = cost_distancia1 + cost_distancia2 + benefici_desti + benefici_desti2 + cost_desti + cost_desti2
             
             return guanys_totals
+        
