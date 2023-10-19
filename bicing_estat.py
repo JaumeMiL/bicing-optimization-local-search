@@ -174,21 +174,19 @@ class Estat(object):
                     furgoneta.primera_est = furgoneta.segona_est = None
             new_flota.remove(furgoneta)  # Elimina la furgoneta de la llista de furgonetes
         
-        elif isinstance(action,Canviar_Estacio_Carr):
+        elif isinstance(action, Canviar_Estacio_Carr):
             estacio_origen_actual = action.estacio_origen_actual
-            nova_estacio_origen = action.nova_estacio
+            nova_estacio_origen = action.nova_estacio_origen
             furgoneta = new_flota[estacio_origen_actual]
-            
+
             if furgoneta.bicis_carregades > 0:
-                    new_estacions.lista_estaciones[estacio_origen_actual].num_bicicletas_next += furgoneta.bicis_carregades 
-                    furgoneta.bicis_carregades = furgoneta.bicis_primera = furgoneta.bicis_segona = 0
-                    furgoneta.primera_est = furgoneta.segona_est = None
-                    
+                new_estacions.lista_estaciones[estacio_origen_actual].num_bicicletas_next += furgoneta.bicis_carregades
+                furgoneta.bicis_carregades = furgoneta.bicis_primera = furgoneta.bicis_segona = 0
+                furgoneta.primera_est = furgoneta.segona_est = None
+
             # Canvia l'estació d'origen de la furgoneta
             furgoneta.origen = nova_estacio_origen
-            
-        
-       
+
         return new_estacions, new_flota
 # Test:
 # estacions = ...  # Load Estacions instance
