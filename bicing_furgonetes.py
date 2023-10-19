@@ -21,23 +21,5 @@ class Furgonetes(object):
         if segona_est is None:
             assert bicis_segona == 0  # Si no hi ha segona estació, la quantitat de bicis ha de ser 0
 
-    
-    def cost_gasolina(self):
-        cost_gas = 0
 
-        # Obtenim les variables necessàries
-        bicis_furgo = self.bicis_furgo
-        origen = self.origen
-        primera_est = self.primera_est
-        segona_est = self.segona_est
-
-        # si existeix la primera estació calculem el cost de la gasolina d'anar-hi
-        if primera_est is not None:
-            cost_gas += ((bicis_furgo + 9)//10) * calcular_distancia(origen, primera_est)/1000
-
-            # si existeix la segona estació calculem el cost de la gasolina d'anar-hi
-            if segona_est is not None:
-                cost_gas += ((bicis_furgo - self.bicis_primera + 9)//10) * calcular_distancia(primera_est, segona_est)/1000
-
-        return cost_gas
 

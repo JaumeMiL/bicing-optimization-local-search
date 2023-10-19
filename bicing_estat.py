@@ -4,7 +4,6 @@ from typing import List, Generator, Set
 from bicing_estacions import *
 from bicing_furgonetes import *
 from bicing_parametres import *
-from distancia_estacions import calcular_distancia
 from bicing_operators import *
 
 class Estat(object):
@@ -12,64 +11,48 @@ class Estat(object):
         self.params = parametres
         self.flota =  flota
         self.estacions = estacions
-
-
-    def generate_actions(self):
-        # The list to store potential actions
-        potential_actions = []
-
-        # We'll limit the actions based on available vans and stations
-        # For simplicity, we'll generate actions for each combination of van and station.
-        for furgoneta_id, furgoneta in enumerate(self.furgonetes):
-            for estacio_id, estacio in enumerate(self.estacions.lista_estaciones):
-                # Ensure we're not loading from a station we've already visited
-                if estacio_id not in furgoneta.origens:
-                    # Generate CarregarBicis actions
-                    for desti_id, estacio_desti in enumerate(self.estacions.lista_estaciones):
-                        if estacio_id != desti_id:  # Ensure origin and destination are not the same
-                            action = CarregarBicis(furgoneta_id, estacio_id, desti_id)
-                            potential_actions.append(action)
-
-                    # Generate DescarergarBicis actions
-                    for desti_id, estacio_desti in enumerate(self.estacions.lista_estaciones):
-                        if estacio_id != desti_id:  # Ensure origin and destination are not the same
-                            action = DescarergarBicis(furgoneta_id, estacio_id, desti_id)
-                            potential_actions.append(action)
-
-                    # Generate Intercanviar_Estacions actions only if there's a second destination already specified
-                    if furgoneta.destins:
-                        for desti_id, estacio_desti in enumerate(self.estacions.lista_estaciones):
-                            if estacio_id != desti_id:  # Ensure origin and destination are not the same
-                                action = Intercanviar_Estacions(furgoneta_id, estacio_id, desti_id)
-                                potential_actions.append(action)
-
-        # Generate Calcular_Guanys actions for every pair of stations
-        for estacio_id, estacio in enumerate(self.estacions.lista_estaciones):
-            for desti_id, estacio_desti in enumerate(self.estacions.lista_estaciones):
-                if estacio_id != desti_id:  # Ensure origin and destination are not the same
-                    action = Calcular_Guanys(estacio_id, desti_id)
-                    potential_actions.append(action)
-
-        return potential_actions
-    
-    #@staticmethod
-    #def calcular_bicis_a_enviar(furgoneta, estacions, estacio_origen, estacio_desti, estacio_desti2=None):
-    #    demanda_desti = estacions.lista_estaciones[estacio_desti].demanda
-    #    bicis_a_enviar = min(furgoneta.capacitat, estacions.lista_estaciones[estacio_origen].num_bicicletas_next, demanda_desti)
-    #    bicis_a_enviar_desti1 = bicis_a_enviar
-    #    
-    #    bicis_a_enviar_desti2 = 0
-    #    if estacio_desti2 is not None:
-    #        demanda_desti2 = estacions.lista_estaciones[estacio_desti2].demanda
-    #        bicis_a_enviar_desti2 = min(furgoneta.capacitat - bicis_a_enviar_desti1, demanda_desti2)
-    #        bicis_a_enviar += bicis_a_enviar_desti2
         
-    #    return bicis_a_enviar_desti1, bicis_a_enviar_desti2
-    
-    #@staticmethod
-    #def calcular_distancia(estacio_a: Estacion, estacio_b: Estacion) -> int:
-    #   return (abs(estacio_a.coordX - estacio_b.coordX) + abs(estacio_a.coordY - estacio_b.coordY)) 
-    
+    def genera_accions_hill_climbing(self):
+        
+        # Para cada estació, intentar carregar bicicletas a una furgoneta
+        for estacio_origen in range(len(self.estacions.lista_estaciones)):
+            for estacio_desti1 in range(len(self.estacions.lista_estaciones)):
+                if estacio_origen != estacio_desti1:
+                    yield CarregarBicis(estacio_origen, estacio_desti1, None)
+                    for estacio_desti2 in range(len(self.estacions.lista_estaciones)):
+                        if estacio_desti2 != estacio_origen and estacio_desti2 != estacio_desti1:
+                            yield CarregarBicis(estacio_origen, estacio_desti1, estacio_desti2)
+
+        # Para cada furgoneta, intentar descarregar bicicletes en una o dos estacions
+        for furgoneta in self.flota:
+            if furgoneta.bicis_carregades > 0:
+                for estacio_desti1 in range(len(self.estacions.lista_estaciones)):
+                    yield DescarregarBicis(furgoneta.origen, estacio_desti1, None)
+                    for estacio_desti2 in range(len(self.estacions.lista_estaciones)):
+                        if estacio_desti2 != estacio_desti1:
+                            yield DescarregarBicis(furgoneta.origen, estacio_desti1, estacio_desti2)
+
+        # Per cada furgoneta amb dos destins, intentar intercanviar els destins
+        for furgoneta in self.flota:
+            if furgoneta.primera_est is not None and furgoneta.segona_est is not None:
+                yield Intercanviar_Estacions(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+
+        # Para cada furgoneta amb un segon desti, intentar eliminar-lo
+        for furgoneta in self.flota:
+            if furgoneta.segona_est is not None:
+                yield Eliminar_Seg_Est(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+
+        # Intentar eliminar cada furgoneta
+        for furgoneta in self.flota:
+            yield Esborrar_Furgoneta(furgoneta.origen)
+
+        # Per cada furgoneta i estación, intentar canviar l'estació de origen de la furgoneta
+        for furgoneta in self.flota:
+            for estacio_nova in range(len(self.estacions.lista_estaciones)):
+                if estacio_nova != furgoneta.origen:
+                    yield Canviar_Estacio_Carr(furgoneta.origen, estacio_nova)
+
+
     def apply_action(self, action: Operadors):
         new_estacions = copy.deepcopy(self.estacions)
         new_flota = copy.deepcopy(self.flota) 
@@ -174,19 +157,21 @@ class Estat(object):
                     furgoneta.primera_est = furgoneta.segona_est = None
             new_flota.remove(furgoneta)  # Elimina la furgoneta de la llista de furgonetes
         
-        elif isinstance(action, Canviar_Estacio_Carr):
+        elif isinstance(action,Canviar_Estacio_Carr):
             estacio_origen_actual = action.estacio_origen_actual
-            nova_estacio_origen = action.nova_estacio_origen
+            nova_estacio_origen = action.nova_estacio
             furgoneta = new_flota[estacio_origen_actual]
-
+            
             if furgoneta.bicis_carregades > 0:
-                new_estacions.lista_estaciones[estacio_origen_actual].num_bicicletas_next += furgoneta.bicis_carregades
-                furgoneta.bicis_carregades = furgoneta.bicis_primera = furgoneta.bicis_segona = 0
-                furgoneta.primera_est = furgoneta.segona_est = None
-
+                    new_estacions.lista_estaciones[estacio_origen_actual].num_bicicletas_next += furgoneta.bicis_carregades 
+                    furgoneta.bicis_carregades = furgoneta.bicis_primera = furgoneta.bicis_segona = 0
+                    furgoneta.primera_est = furgoneta.segona_est = None
+                    
             # Canvia l'estació d'origen de la furgoneta
             furgoneta.origen = nova_estacio_origen
-
+            
+        
+       
         return new_estacions, new_flota
 # Test:
 # estacions = ...  # Load Estacions instance
@@ -205,10 +190,11 @@ class Estat(object):
     #Heurística Podem utilitzar les que tenim ja creades en l'operador o mirar de fer que ho calculi tot arribat a l'estat fina
 
         
-    
+    def calcular_distancia(estacio_a: Estacion, estacio_b: Estacion) -> int:
+            return (abs(estacio_a.coordX - estacio_b.coordX) + abs(estacio_a.coordY - estacio_b.coordY))
     
 
-    def heuristica1(self):
+    def heuristica1(self): 
 
         for furgoneta in self.flota:
             
