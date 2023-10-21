@@ -194,7 +194,6 @@ class Estat(object):
         cost_gasolina = sum(furgoneta.cost_gasolina() for furgoneta in self.flota)
         ingresos = sum(furgoneta.ingresos() for furgoneta in self.flota)
         perdues = sum(furgoneta.perdues() for furgoneta in self.flota)
-        print(f'Guanys: {ingresos}, perdues {perdues}, cost gasolina {cost_gasolina}')
         return ingresos - perdues - cost_gasolina
     
     # def __repr__(self):
