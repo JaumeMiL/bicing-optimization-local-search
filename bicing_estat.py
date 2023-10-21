@@ -205,4 +205,9 @@ class Estat(object):
     # def copia(self):
 
     # def __eq__(self, __value):
+
+# Funcions de generació dels diferents estats inicials
+
+def genera_estat_inicial_0(params: Parametres, estacions: Estaciones) -> Estat:
+    return Estat(params, [], estacions, set())
         
