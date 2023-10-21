@@ -4,7 +4,7 @@ from bicing_estacions import Estacion, Estaciones
 
 def dist_estacions(est1: Estacion, est2: Estacion) -> int:
     distancia = abs(est1.coordX - est2.coordX) + abs(est1.coordY - est2.coordY)
-    return dist_estacions
+    return distancia
 
 class Furgonetes(object):
     def __init__(self, origen: Estacion, bicis_carregades: int = 0, primera_est: Estacion = None, bicis_primera: int = 0, segona_est: Estacion = None, bicis_segona: int = 0):
