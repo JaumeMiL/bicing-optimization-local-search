@@ -1,9 +1,9 @@
 from copy import deepcopy
 from typing import List, Generator, Set 
 
-from bicing_estacions import *
-from bicing_furgonetes import *
-from bicing_parametres import *
+from bicing_estacions import Estacion, Estaciones
+from bicing_furgonetes import Furgonetes
+from bicing_parametres import Parametres
 from bicing_operators import *
 
 class Estat(object):
