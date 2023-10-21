@@ -7,26 +7,24 @@ from bicing_parametres import *
 from bicing_operators import *
 
 class Estat(object):
-    def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones):
+    def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones, estacions_assignades = set()):
         self.params = parametres
         self.flota =  flota
         self.estacions = estacions
+        self.estacions_assignades = estacions_assignades
         
-    def genera_accions_hill_climbing(self) -> Generator[Operadors, None, None]:
+    def genera_accions(self):
         
         # Set per a verificar si una estació ja ha estat assignada a una furgoneta
-                
-        estacions_assignades = set()
         
         for furgoneta in self.flota: 
             if furgoneta.origen is not None:
-                estacions_assignades.add(furgoneta.origen)  
-
+                self.estacions_assignades.add(furgoneta.origen)  
 
         
         # Per cada estació, intentar carregar bicicletes a una furgoneta
         for estacio_origen in range(len(self.estacions.lista_estaciones)):
-            if estacio_origen not in estacions_assignades:  # Comprovació una furgoneta per origen
+            if estacio_origen not in self.estacions_assignades:  # Comprovació una furgoneta per origen
                 for furgoneta in self.flota:
                     if not furgoneta.viatge_fet: #comprovació que una furgoneta sol fagi un viatge
                         for estacio_desti1 in range(len(self.estacions.lista_estaciones)):
@@ -61,16 +59,13 @@ class Estat(object):
         # Per cada furgoneta i estació, intentar canviar l'estació de origen de la furgoneta
         for furgoneta in self.flota:
             for estacio_nova in range(len(self.estacions.lista_estaciones)):
-                if estacio_nova != furgoneta.origen and estacio_nova not in estacions_assignades:
+                if estacio_nova != furgoneta.origen and estacio_nova not in self.estacions_assignades:
                     yield Canviar_Estacio_Carr(furgoneta.origen, estacio_nova)
 
         # Intentar eliminar cada furgoneta
         for furgoneta in self.flota:
             if not furgoneta.viatge_fet:
                 yield Esborrar_Furgoneta(furgoneta.origen)
-
-        
-
 
 
     def apply_action(self, action: Operadors):
@@ -191,71 +186,20 @@ class Estat(object):
                     
             # Canvia l'estació d'origen de la furgoneta
             furgoneta.origen = nova_estacio_origen
-            
         
-       
         return new_estacions, new_flota
-# Test:
-# estacions = ...  # Load Estacions instance
-# furgonetes = ...  # Load Furgonetes instance
-# state = BicingState(estacions, furgonetes)
-# actions = state.generate_actions()
-
-    #Copia
-
-    #Repr
-
-    #Genera Accions
-
-    #Aplica accions
-
-    #Heurística Podem utilitzar les que tenim ja creades en l'operador o mirar de fer que ho calculi tot arribat a l'estat fina
-
-        
-    def calcular_distancia(estacio_a: Estacion, estacio_b: Estacion) -> int:
-            return (abs(estacio_a.coordX - estacio_b.coordX) + abs(estacio_a.coordY - estacio_b.coordY))
     
 
-    def heuristica1(self): 
+    def heuristica(self): 
+        cost_gasolina = sum(furgoneta.cost_gasolina() for furgoneta in self.flota)
+        ingresos = sum(furgoneta.ingresos() for furgoneta in self.flota)
+        perdues = sum(furgoneta.perdues() for furgoneta in self.flota)
+        print(f'Guanys: {ingresos}, perdues {perdues}, cost gasolina {cost_gasolina}')
+        return ingresos - perdues - cost_gasolina
+    
+    # def __repr__(self):
 
-        for furgoneta in self.flota:
-            
-        
-            # Costos per distancia
-            distancia1 = self.calcular_distancia(estacions, self.estacio_origen, self.estacio_desti)/1000
-            cost_distancia1 = -((bicis_a_enviar_desti1 + 9) // 10) * distancia1
-            
-            # Si hi ha segon destí
-            if self.estacio_desti2:
-                distancia2 = self.calcular_distancia(estacions, self.estacio_desti, self.estacio_desti2)/1000
-                cost_distancia2 = -((bicis_a_enviar_desti2 + 9) // 10) * distancia2 
-            else:
-                cost_distancia2 = 0
-            
-            # Benefici per apropar bicis a la demanda
-            estacio_desti_obj = estacions.lista_estaciones[self.estacio_desti]
-            benefici_desti = max(0, estacio_desti_obj.demanda - estacio_desti_obj.num_bicicletas_next)
-            
-            # Si hi ha segon destí
-            if self.estacio_desti2:
-                estacio_desti2_obj = estacions.lista_estaciones[self.estacio_desti2]
-                benefici_desti2 = max(0, estacio_desti2_obj.demanda - estacio_desti2_obj.num_bicicletas_next)
-            else:
-                benefici_desti2 = 0
-                
-            # Costos per apropar bicis a la demanda
-            estacio_desti_obj = estacions.lista_estaciones[self.estacio_desti]
-            cost_desti = min(0, estacio_desti_obj.demanda - estacio_desti_obj.num_bicicletas_next)
-            
-            # Si hi ha segon destí
-            if self.estacio_desti2:
-                estacio_desti2_obj = estacions.lista_estaciones[self.estacio_desti2]
-                benefici_desti2 = min(0, estacio_desti2_obj.demanda - estacio_desti2_obj.num_bicicletas_next)
-            else:
-                cost_desti2 = 0
-                    
-            #Guanys totals
-            guanys_totals = cost_distancia1 + cost_distancia2 + benefici_desti + benefici_desti2 + cost_desti + cost_desti2
-            
-            return guanys_totals
+    # def copia(self):
+
+    # def __eq__(self, __value):
         
