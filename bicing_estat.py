@@ -15,8 +15,6 @@ class Estat(object):
         
     def genera_accions(self):
         
-        # Set per a verificar si una estació ja ha estat assignada a una furgoneta
-        
         for furgoneta in self.flota: 
             if furgoneta.origen is not None:
                 self.estacions_assignades.add(furgoneta.origen)  
