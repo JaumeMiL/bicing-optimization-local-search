@@ -1,8 +1,7 @@
 from typing import Generator
 
 from aima.search import Problem
-
-from bicing_operators import BicingOperator
+from bicing_operators import Operadors
 from bicing_estat import Estat
 
 
@@ -11,14 +10,14 @@ class BicingProblem(Problem):
         self.use_entropy = use_entropy
         super().__init__(initial_state)
 
-    def actions(self, state: Estat) -> Generator[BicingOperator, None, None]:
+    def actions(self, state: Estat) -> Generator[Operadors, None, None]:
         return state.genera_accions()
 
-    def result(self, state: Estat, action: BicingOperator) -> Estat:
-        return state.aplica_operador(action)
+    def result(self, state: Estat, action: Operadors) -> Estat:
+        return state.aplica_accions(action)
 
     def value(self, state: Estat) -> float:
-        return state.heuristic()
+        return state.heuristica1()
 
     def goal_test(self, state: Estat) -> bool:
         return False
