@@ -189,8 +189,12 @@ class Estat(object):
         
         return new_estacions, new_flota
     
-
-    def heuristica(self): 
+    def heurística1(self):
+        ingresos = sum(furgoneta.ingresos() for furgoneta in self.flota)
+        perdues = sum(furgoneta.perdues() for furgoneta in self.flota)
+        return ingresos - perdues
+    
+    def heuristica2(self): 
         cost_gasolina = sum(furgoneta.cost_gasolina() for furgoneta in self.flota)
         ingresos = sum(furgoneta.ingresos() for furgoneta in self.flota)
         perdues = sum(furgoneta.perdues() for furgoneta in self.flota)
