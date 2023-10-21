@@ -12,7 +12,7 @@ class Estat(object):
         self.flota =  flota
         self.estacions = estacions
         
-    def genera_accions_hill_climbing(self):
+    def genera_accions_hill_climbing(self) -> Generator[Operadors, None, None]:
         
         # Set per a verificar si una estació ja ha estat assignada a una furgoneta
                 
