@@ -38,36 +38,6 @@ class Estat(object):
                 self.estacions_origen == other.estacions_origen)
 
     def genera_accions(self):
-    
-    # Set per a verificar si una estació ja ha estat assignada a una furgoneta
-    
-        for furgoneta in self.flota: 
-            if furgoneta.origen is not None:
-                self.estacions_origen.add(furgoneta.origen)  
-
-        
-        # Per cada estació, intentar carregar bicicletes a una furgoneta
-        for estacio_origen in range(len(self.estacions.lista_estaciones)):
-            if estacio_origen not in self.estacions_origen:  # Comprovació una furgoneta per origen
-                for furgoneta in self.flota:
-                    if not furgoneta.viatge_fet: #comprovació que una furgoneta sol fagi un viatge
-                        for estacio_desti1 in range(len(self.estacions.lista_estaciones)):
-                            if estacio_origen != estacio_desti1:
-                                yield CarregarBicis(estacio_origen, estacio_desti1, None)
-                                for estacio_desti2 in range(len(self.estacions.lista_estaciones)):
-                                    if estacio_desti2 != estacio_origen and estacio_desti2 != estacio_desti1:
-                                        yield CarregarBicis(estacio_origen, estacio_desti1, estacio_desti2)
-
-        # Per cada furgoneta, descarrega en els seus destins
-        for furgoneta in self.flota:
-            if not furgoneta.viatge_fet:  # comprovació de que una furgoneta sol fagi un viatje
-                if furgoneta.bicis_carregades > 0:
-                    # Descarrega primer destí
-                    yield DescarregarBicis(furgoneta.origen, furgoneta.primera_est, None)
-                    # Si hi ha un egon destí
-                    if furgoneta.segona_est is not None:
-                        yield DescarregarBicis(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
-
 
         # Per cada furgoneta amb dos destins, intentar intercanviar els destins
         for furgoneta in self.flota:
@@ -264,19 +234,35 @@ class Estat(object):
             furgoneta = new_state.flota[estacio_origen]
 
             if (furgoneta.bicis_primera >= 1 and furgoneta.bicis_segona >= 1) or (furgoneta.bicis_primera >= 1 and estacio_desti2 == None):
-                furgoneta.bicis_primera -= 1
-                furgoneta.bicis_segona -= 1
-                furgoneta.bicis_carregades -= 2
-                estacio_origen.num_bicicletas_no_usadas += 2
+                if estacio_desti2 == None:
+                    furgoneta.bicis_primera -= 1
+                    furgoneta.bicis_carregades -= 1
+                    estacio_origen.num_bicicletas_no_usadas += 1
+                else:
+                    furgoneta.bicis_primera -= 1
+                    furgoneta.bicis_segona -= 1
+                    furgoneta.bicis_carregades -= 2
+                    estacio_origen.num_bicicletas_no_usadas += 2
             
+        elif isinstance (action, Bici_Estacio1_A_Estacio2):
+            estacio_origen = action.estacio_origen
+            estacio_desti = action.estacio_desti
+            estacio_desti2 = action.estacio_desti2
+            furgoneta = new_state.flota[estacio_origen]
 
+            if estacio_desti != None and estacio_desti2 != None and furgoneta.bicis_primera >= 1:
+                furgoneta.bicis_primera -= 1
+                furgoneta.bicis_segona += 1
 
-                
+        elif isinstance (action, Bici_Estacio2_A_Estacio1):
+            estacio_origen = action.estacio_origen
+            estacio_desti = action.estacio_desti
+            estacio_desti2 = action.estacio_desti2
+            furgoneta = new_state.flota[estacio_origen]
 
-
-        elif isinstance (action, Bici_Estacio1_A_Estacio2)
-        elif isinstance (action, Bici_Estacio2_A_Estacio1)
-
+            if estacio_desti != None and estacio_desti2 != None and furgoneta.bicis_segona >= 1:
+                furgoneta.bicis_primera += 1
+                furgoneta.bicis_segona -= 1
 
         return new_state
 
@@ -294,63 +280,63 @@ class Estat(object):
         return ingresos - perdues - cost_gasolina
 
 
-    # Genera un estat inicial sense furgonetes
-    def genera_estat_inicial_0(params: Parametres, estacions: Estaciones):
-        return Estat(params, [], estacions, set())
+# Genera un estat inicial sense furgonetes
+def genera_estat_inicial_0(params: Parametres, estacions: Estaciones):
+    return Estat(params, [], estacions, set())
 
-    # Genera un estat inicial on les estacions de carega i descarrega de les furgonetes es en funció de l'ordre de les estacions
-    def genera_estat_inicial_1(params: Parametres, estacions: Estaciones):
-        def iterar_estacions(Estaciones) -> Generator[Estacion, None, None]:
-            return (estacio for estacio in estacions.lista_estaciones)
-        iterador_est = iterar_estacions(estacions)
-        flota = []
-        estacions_origen = set()
-        for i in range(params.n_furgonetes):
-            estacio_origen = next(iterador_est)
-            estacions_origen.add(estacio_origen)
-            carrega = estacio_origen.num_bicicletas_no_usadas
-            primera_est = next(iterador_est)
-            bicis_primera = carrega
-            flota.append(Furgonetes(estacio_origen, carrega))
-        return Estat(params, flota, estacions, estacions_origen)
+# Genera un estat inicial on les estacions de carega i descarrega de les furgonetes es en funció de l'ordre de les estacions
+def genera_estat_inicial_1(params: Parametres, estacions: Estaciones):
+    def iterar_estacions(Estaciones) -> Generator[Estacion, None, None]:
+        return (estacio for estacio in estacions.lista_estaciones)
+    iterador_est = iterar_estacions(estacions)
+    flota = []
+    estacions_origen = set()
+    for i in range(params.n_furgonetes):
+        estacio_origen = next(iterador_est)
+        estacions_origen.add(estacio_origen)
+        carrega = estacio_origen.num_bicicletas_no_usadas
+        primera_est = next(iterador_est)
+        bicis_primera = carrega
+        flota.append(Furgonetes(estacio_origen, carrega))
+    return Estat(params, flota, estacions, estacions_origen)
 
-    #Genera un estat inicial que recull biciletes en les estacions amb més bicicletes_no_usades i les porta a les estacions amb demanda més properes
-    def genera_estat_inicial_2(params: Parametres, estacions: Estaciones):
-        flota = []
-        estacions_ordenades = sorted(estacions.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
-        estacions_excedent = [est for est in estacions_ordenades if est.num_bicicletas_next > est.demanda]
-        estacions_carrega = estacions_excedent[0:params.n_furgonetes]
-        estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
+#Genera un estat inicial que recull biciletes en les estacions amb més bicicletes_no_usades i les porta a les estacions amb demanda més properes
+def genera_estat_inicial_2(params: Parametres, estacions: Estaciones):
+    flota = []
+    estacions_ordenades = sorted(estacions.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
+    estacions_excedent = [est for est in estacions_ordenades if est.num_bicicletas_next > est.demanda]
+    estacions_carrega = estacions_excedent[0:params.n_furgonetes]
+    estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
+    
+    for est_carrega in estacions_carrega:
+        distancia_minima = float('inf')
+        est_descarrega_propera = None
+        distancia_minima2 = float('inf')
+        est_2descarrega_propera = None
+        carrega_max = min(est_carrega.num_bicicletas_no_usadas, (est_carrega.num_bicicletas_next-est_carrega.demanda), params.max_bicicletes)
+
+        for est_descarrega in estacions_descarrega:
+            distancia = dist_estacions(est_carrega, est_descarrega)
+            if distancia < distancia_minima:
+                distancia_minima, est_descarrega_propera = distancia, est_descarrega
         
-        for est_carrega in estacions_carrega:
-            distancia_minima = float('inf')
-            est_descarrega_propera = None
-            distancia_minima2 = float('inf')
-            est_2descarrega_propera = None
-            carrega_max = min(est_carrega.num_bicicletas_no_usadas, (est_carrega.num_bicicletas_next-est_carrega.demanda), params.max_bicicletes)
-
-            for est_descarrega in estacions_descarrega:
-                distancia = dist_estacions(est_carrega, est_descarrega)
-                if distancia < distancia_minima:
-                    distancia_minima, est_descarrega_propera = distancia, est_descarrega
-            
-            descarrega = min(est_descarrega_propera.demanda - est_descarrega_propera.num_bicicletas_next, carrega_max)
-            
-            if (est_descarrega_propera.demanda - est_descarrega_propera.num_bicicletas_next) == 0:
-                estacions_descarrega.remove(est_descarrega_propera) 
-
-            for est_descarrega2 in estacions_descarrega: 
-                distancia2 = dist_estacions(est_descarrega_propera, est_descarrega2)
-                if distancia2 < distancia_minima2:
-                    distancia_minima2, est_2descarrega_propera = distancia2, est_descarrega2
-            
-            descarrega2 = min((carrega_max - descarrega),(est_2descarrega_propera.demanda - est_2descarrega_propera.num_bicicletas_next))
-            
-            if (est_2descarrega_propera.demanda - est_2descarrega_propera.num_bicicletas_next) == 0:
-                estacions_descarrega.remove(est_2descarrega_propera)
-
-            carrega = min(carrega_max, (descarrega + descarrega2))        
-            
-            flota.append(Furgonetes(est_carrega, carrega, est_descarrega_propera, descarrega, est_2descarrega_propera, descarrega2))
+        descarrega = min(est_descarrega_propera.demanda - est_descarrega_propera.num_bicicletas_next, carrega_max)
         
-        return Estat(params, flota, estacions, set(estacions_carrega))
+        if (est_descarrega_propera.demanda - est_descarrega_propera.num_bicicletas_next) == 0:
+            estacions_descarrega.remove(est_descarrega_propera) 
+
+        for est_descarrega2 in estacions_descarrega: 
+            distancia2 = dist_estacions(est_descarrega_propera, est_descarrega2)
+            if distancia2 < distancia_minima2:
+                distancia_minima2, est_2descarrega_propera = distancia2, est_descarrega2
+        
+        descarrega2 = min((carrega_max - descarrega),(est_2descarrega_propera.demanda - est_2descarrega_propera.num_bicicletas_next))
+        
+        if (est_2descarrega_propera.demanda - est_2descarrega_propera.num_bicicletas_next) == 0:
+            estacions_descarrega.remove(est_2descarrega_propera)
+
+        carrega = min(carrega_max, (descarrega + descarrega2))        
+        
+        flota.append(Furgonetes(est_carrega, carrega, est_descarrega_propera, descarrega, est_2descarrega_propera, descarrega2))
+    
+    return Estat(params, flota, estacions, set(estacions_carrega))
