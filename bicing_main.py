@@ -4,9 +4,8 @@ import time
 from aima.search import hill_climbing
 
 from abia_bicing import Estacion, Estaciones
-
 from bicing_parametres import Parametres
-from bicing_problem import BicingProblem
+from bicing_problem import *
 from bicing_estat import genera_estat_inicial_1, genera_estat_inicial_0, genera_estat_inicial_2, Estat
 
 
