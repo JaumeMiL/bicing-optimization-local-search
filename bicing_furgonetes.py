@@ -3,7 +3,8 @@ import random
 from abia_bicing import Estacion, Estaciones
 
 def dist_estacions(est1: Estacion, est2: Estacion) -> int:
-    distancia = abs(est1.coordX - est2.coordX) + abs(est1.coordY - est2.coordY)
+    if est1 is not None and est2 is not None:
+        distancia = abs(est1.coordX - est2.coordX) + abs(est1.coordY - est2.coordY)
     return distancia
 
 class Furgonetes(object):
@@ -75,8 +76,8 @@ class Furgonetes(object):
         
     def distancia_recorreguda(self):
         dist_total = 0
-        if self.primera_est is not None and self.origrn is not None:
-            dist_total += dist_estacions(self.orien, self.primera_est)
+        if self.primera_est is not None and self.origen is not None:
+            dist_total += dist_estacions(self.origen, self.primera_est)
             if self.segona_est is not None:
                 dist_total += dist_estacions(self.primera_est, self.segona_est)
         return dist_total
