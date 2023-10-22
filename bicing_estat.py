@@ -7,11 +7,35 @@ from bicing_parametres import Parametres
 from bicing_operators import *
 
 class Estat(object):
+    
     def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones, estacions_origen = set()):
         self.params = parametres
         self.flota =  flota
         self.estacions = estacions
         self.estacions_origen = estacions_origen
+        
+
+    def copy(self) -> Estat:
+        flota_copy = deepcopy(self.flota)
+        estacions_copy = deepcopy(self.estacions)
+        estacions_origen_copy = deepcopy(self.estacions_origen)
+        
+        return Estat(self.params, flota_copy, estacions_copy, estacions_origen_copy)
+    
+    def __repr__(self) -> str:
+
+        return f"Estat(Flota: {self.flota}, Estaciones: {len(self.estacions.lista_estaciones)}, Estaciones Origen: {self.estacions_origen})"
+    
+    
+    def __eq__(self, other: "Estat") -> bool:
+        
+        #Compara si dos estats son iguals.
+        if not isinstance(other, Estat):
+            return False
+        return (self.flota == other.flota and 
+                self.estacions == other.estacions and 
+                self.estacions_origen == other.estacions_origen)
+
         
     def aplica_accions(self, action: Operadors) -> Estat:
         new_state = self.copy()
