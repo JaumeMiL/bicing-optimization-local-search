@@ -67,3 +67,54 @@ class Esborrar_Furgoneta(Operadors):
 
     def __repr__(self) -> str:
         return f"Suprimeix la furgoneta amb estació d'origen {self.estacio_origen}"
+
+#NOUS OPERADORS CREATS DIA 22/10
+
+#Aquest operador en cas de ser possible carrega dues bicicletes més que descarregarà a l'estació 1 i a l'estació 2
+class Carregar_Dues_Bicicletes_Més(Operadors):
+    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int = None):
+        self.estacio_origen = estacio_origen
+        self.estacio_desti = estacio_desti
+        self.estacio_desti2 = estacio_desti2
+        
+    def __repr__(self) -> str: 
+        if self.estacio_desti2:
+            return f"Carrega dues bicicletes més a la furgoneta l'estació i descarrega una més a l'estació {self.estacio_desti} i {self.estacio_desti2}"
+        else:
+            return f"Carrega una bicicleta més a la furgoneta i descarrega-la a l'estació {self.estacio_desti}"
+
+
+#Aquest operador en cas de ser possible treu dues bicicletes que anaven cada una a una estació diferent (a l'estació 1 i a l'estació 2)
+class Carregar_Dues_Bicicletes_Menys(Operadors):
+    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int = None):
+        self.estacio_origen = estacio_origen
+        self.estacio_desti = estacio_desti
+        self.estacio_desti2 = estacio_desti2
+        
+    def __repr__(self) -> str: 
+        if self.estacio_desti2:
+            return f"Carrega dues bicicletes menys a la furgoneta i descarrega una menys a l'estació {self.estacio_desti} i {self.estacio_desti2}"
+        else:
+            return f"Carrega una bicicleta menys a la furgoneta i descarrega'n una menys a l'estació {self.estacio_desti}"
+        
+#Aquest operador passa una bici que s'havia de descarregar a l'estació 1 a l'estació 2
+class Bici_Estacio1_A_Estacio2(Operadors):
+    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int = None):
+        self.estacio_origen = estacio_origen
+        self.estacio_desti = estacio_desti
+        self.estacio_desti2 = estacio_desti2
+        
+    def __repr__(self) -> str: 
+        if self.estacio_desti2:
+            return f"Una bicicleta que anava a l'estació {self.estacio_desti} ara anirà a l'estació {self.estacio_desti2}"
+    
+#Aquest operador passa una bici que s'havia de descarregar a l'estació 2 a l'estació 1
+class Bici_Estacio2_A_Estacio1(Operadors):
+    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int = None):
+        self.estacio_origen = estacio_origen
+        self.estacio_desti = estacio_desti
+        self.estacio_desti2 = estacio_desti2
+        
+    def __repr__(self) -> str: 
+        if self.estacio_desti2:
+            return f"Una bicicleta que anava a l'estació {self.estacio_desti2} ara anirà a l'estació {self.estacio_desti}"

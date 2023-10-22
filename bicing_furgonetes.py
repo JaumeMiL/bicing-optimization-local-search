@@ -14,8 +14,6 @@ class Furgonetes(object):
         self.bicis_carregades = bicis_carregades  
         self.bicis_primera = bicis_primera  # Nombre de bicis que es deixen a la primera estació
         self.bicis_segona = bicis_segona  # Nombre de bicis que es deixen a la segona estació
-        self.capacitat = 30 #Capacitat màxima de la furgoneta
-        self.viatge_fet = False #Marca si ha fet el viatge
         if primera_est is None:
             assert bicis_primera == 0  # Si no hi ha primera estació, la quantitat de bicis ha de ser 0
         if segona_est is None:
@@ -84,8 +82,8 @@ class Furgonetes(object):
         return dist_total
     
     def __repr__(self):
-        return f"Furgonetes({self.origen}, {self.bicis_carregades}, {self.primera_est}, {self.segona_est}, {self.bicis_segona})"
+        return f"Furgoneta: Origen: {self.origen}, Bicis caregades: {self.bicis_carregades},\nPrimera estació de destí: {self.primera_est}, Bicis descarregades: {self.bicis_primera},\nSegona estació de destí: {self.segona_est}, Bicis descarregades: {self.bicis_segona}\n )"
     def __eq__(self, __value: object) -> bool:
         return self.origen == __value.origen and self.bicis_carregades == __value.bicis_carregades and self.bicis_primera == __value.bicis_primera and self.bicis_segona == __value.bicis_segona and self.primera_est == __value.primera_est and self.segona_est == __value.segona_est
     def __copy__(self):
-        return Furgonetes(self.eorigen, self.bicis_carregades, self.primera_est, self.bicis_primera, self.segona_est , self.bicis_segona)
+        return Furgonetes(self.origen, self.bicis_carregades, self.primera_est, self.bicis_primera, self.segona_est , self.bicis_segona)
