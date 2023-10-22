@@ -123,7 +123,7 @@ class Estat(object):
                     if estacio_desti is not None:
                         # Calcula la quantitat de bicicletes a descarregar a la primera estació de descàrrega
                         if (estacio_desti.num_bicicletas_next - estacio_desti.demanda < 0):
-                            if (estacio_origen.num_bicicletas_no_usadas > abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda))
+                            if (estacio_origen.num_bicicletas_no_usadas > abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda)):
                                 descarrega1 = abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda)
                             else:
                                 descarrega1 = estacio_origen.num_bicicletas_no_usadas
@@ -144,7 +144,7 @@ class Estat(object):
                             if estacio_desti2 is not None:
                                 # Calcula la quantitat de bicicletes a descarregar a la segona estació
                                 if (estacio_desti.num_bicicletas_next - estacio_desti.demanda < 0):
-                                    if (estacio_origen.num_bicicletas_no_usadas > abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda))
+                                    if (estacio_origen.num_bicicletas_no_usadas > abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda)):
                                         descarrega2 = abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda)
                                     else:
                                         descarrega2 = estacio_origen.num_bicicletas_no_usadas
