@@ -15,6 +15,7 @@ class Furgonetes(object):
         self.bicis_carregades = bicis_carregades  
         self.bicis_primera = bicis_primera  # Nombre de bicis que es deixen a la primera estació
         self.bicis_segona = bicis_segona  # Nombre de bicis que es deixen a la segona estació
+
         if primera_est is None:
             assert bicis_primera == 0  # Si no hi ha primera estació, la quantitat de bicis ha de ser 0
         if segona_est is None:

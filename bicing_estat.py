@@ -17,11 +17,7 @@ class Estat(object):
 
 
     def copy(self):
-        flota_copy = deepcopy(self.flota)
-        estacions_copy = deepcopy(self.estacions)
-        estacions_origen_copy = deepcopy(self.estacions_origen)
-        
-        return Estat(self.params, flota_copy, estacions_copy, estacions_origen_copy)
+        return Estat(self.params, [furgoneta.__copy__() for furgoneta in self.flota], self.estacions, set(self.estacions_origen))
     
     def __repr__(self) -> str:
 
@@ -57,9 +53,11 @@ class Estat(object):
                 if estacio_nova != furgoneta.origen and estacio_nova not in self.estacions_origen:
                     yield Canviar_Estacio_Carr(furgoneta.origen, estacio_nova)
 
+        
         # Intentar eliminar cada furgoneta
         for furgoneta in self.flota:
             yield Esborrar_Furgoneta(furgoneta.origen)
+        
         
         for furgoneta in self.flota:
             estacio_origen = furgoneta.origen
@@ -143,7 +141,7 @@ class Estat(object):
             if furgoneta is not None and furgoneta.segona_est is not None:
                 var_temp_bicis_desti2 = furgoneta.bicis_segona
                 furgoneta.bicis_segona = 0
-                new_state.estacions.lista_estaciones[estacio_desti].num_bicicletas_next += var_temp_bicis_desti2
+                estacio_desti.num_bicicletas_next += var_temp_bicis_desti2
             if furgoneta is not None:
                 furgoneta.segona_est = None
 
@@ -206,7 +204,6 @@ class Estat(object):
                 # Afegix la nova furgoneta a la flota
                 action.flota.append(nova_furgo)
 
-
         elif isinstance(action, Esborrar_Furgoneta):
             estacio_origen = action.estacio_origen 
             furgoneta = find_furgoneta_by_origen(estacio_origen)
@@ -214,7 +211,7 @@ class Estat(object):
             # Si hi ha bicis carregades, les retorna a l'estació d'origen
             if furgoneta is not None:
                 if furgoneta.bicis_carregades > 0:
-                    new_state.estacions.lista_estaciones[estacio_origen].num_bicicletas_next += furgoneta.bicis_carregades 
+                    estacio_origen.num_bicicletas_next += furgoneta.bicis_carregades 
                     furgoneta.bicis_carregades = 0
                     furgoneta.primera_est = None
                     furgoneta.segona_est = None
@@ -241,7 +238,7 @@ class Estat(object):
             # Si hi ha bicis carregades, les retorna a l'estació d'origen
             if furgoneta is not None:
                 if furgoneta.bicis_carregades > 0:
-                    new_state.estacions.lista_estaciones[estacio_origen_actual].num_bicicletas_next += furgoneta.bicis_carregades 
+                    estacio_origen_actual.num_bicicletas_next += furgoneta.bicis_carregades 
                     furgoneta.bicis_carregades = 0
                     furgoneta.primera_est = None
                     furgoneta.segona_est = None
