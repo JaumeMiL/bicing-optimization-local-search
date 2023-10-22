@@ -8,6 +8,7 @@ from bicing_operators import *
 
 
 
+
 class Estat(object):
     
     def __init__(self, parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones, estacions_origen = set()):
