@@ -1,7 +1,7 @@
 import random
 import time
 
-from aima.search import hill_climbing
+from aima.search import hill_climbing, simulated_annealing
 
 from abia_bicing import Estacion, Estaciones
 from bicing_parametres import Parametres
@@ -15,14 +15,17 @@ estacions = Estaciones(params.n_estacions, params.n_bicis, params.llavor)
 estat_inicial = genera_estat_inicial_0(params, estacions)
 h_inicial = estat_inicial.heuristica1()
 n = hill_climbing(BicingProblem(estat_inicial))
+#sa = simulated_annealing(BicingProblem(estat_inicial))
 print(f"\nEstat 0: \n  Inicial: {h_inicial}€ Final: {n.heuristica1()} €")
 
 estat_inicial = genera_estat_inicial_1(params, estacions)
 h_inicial = estat_inicial.heuristica2()
 #n = hill_climbing(BicingProblem(estat_inicial))
+#sa = simulated_annealing(BicingProblem(estat_inicial))
 print(f"\nEstat 1: \n  Inicial: {h_inicial}€")
 
 estat_inicial = genera_estat_inicial_2(params, estacions)
 h_inicial = estat_inicial.heuristica2()
 #n = hill_climbing(BicingProblem(estat_inicial))
+#sa = simulated_annealing(BicingProblem(estat_inicial))
 print(f"\nEstat 2: \n  Inicial: {h_inicial}€")

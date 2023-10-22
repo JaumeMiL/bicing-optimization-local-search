@@ -5,7 +5,7 @@ from abia_bicing import Estacion, Estaciones
 from bicing_furgonetes import Furgonetes, dist_estacions
 from bicing_parametres import Parametres
 from bicing_operators import *
-from bicing_problem import Estat 
+
 
 
 class Estat(object):
