@@ -200,14 +200,7 @@ class Estat(object):
         ingresos = sum(furgoneta.ingresos() for furgoneta in self.flota)
         perdues = sum(furgoneta.perdues() for furgoneta in self.flota)
         return ingresos - perdues - cost_gasolina
-    
-    # def __repr__(self):
 
-    # def copia(self):
-
-    # def __eq__(self, __value):
-
-# Funcions de generació dels diferents estats inicials
 
 # Genera un estat inicial sense furgonetes
 def genera_estat_inicial_0(params: Parametres, estacions: Estaciones) -> Estat:
