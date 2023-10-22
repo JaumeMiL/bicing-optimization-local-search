@@ -3,7 +3,7 @@ class Parametres():
         self.n_estacions = n_estacions
         self.n_bicis = n_bicis
         self.llavor =  llavor
-        self.n_furgonetes =  n_furgonetes
+        self.n_furgonetes =  n_furgonetes 
         self.max_bicicletes = max_bicicletes
         
     def __repr__(self):

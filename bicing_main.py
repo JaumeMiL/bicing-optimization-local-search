@@ -3,7 +3,7 @@ import time
 
 from aima.search import hill_climbing
 
-from bicing_estacions import Estacion, Estaciones
+from abia_bicing import Estacion, Estaciones
 
 from bicing_parametres import Parametres
 from bicing_problem import BicingProblem

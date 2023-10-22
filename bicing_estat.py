@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import List, Generator, Set 
 
-from bicing_estacions import Estacion, Estaciones
+from abia_bicing import Estacion, Estaciones
 from bicing_furgonetes import Furgonetes, dist_estacions
 from bicing_parametres import Parametres
 from bicing_operators import *
@@ -98,6 +98,66 @@ class Estat(object):
                 furgoneta.bicis_segona = 0
                 new_state.estacions.lista_estaciones[estacio_desti].num_bicicletas_next += var_temp_bicis_desti2
             furgoneta.segona_est = None
+
+        elif isinstance(action, Afegir_Furgoneta):
+            if len(action.flota) < self.params.n_furgonetes:
+                estacio_origen = estacio_desti = estacio_desti2 = None
+                carrega = descarrega1 = descarrega2 = 0
+
+                # Troba l'estació amb més bicicletes no utilitzades per posar-hi la furgoneta
+                for i in self.estacions.lista_estaciones:
+                    if estacio_origen is None or i.num_bicicletas_no_usadas > estacio_origen.num_bicicletas_no_usadas:
+                        estacio_origen = i
+                        variable_temp_no_usades = i.num_bicicletas_no_usadas #necesito saber quantes bicis no usades hi ha
+
+                if estacio_origen is not None:
+                    # Busca la primera estació per descarregar més propera
+                    distancia_minima, estacio_desti = float('inf'), None
+                    for est in action.estacions.lista_estaciones:
+                        if est.num_bicicletas_next - est.demanda < 0 and est is not estacio_origen:
+                            distancia = dist_estacions(estacio_origen, est)
+                            if distancia < distancia_minima:
+                                distancia_minima = distancia
+                                estacio_desti = est
+
+                    if estacio_desti is not None:
+                        # Calcula la quantitat de bicicletes a descarregar a la primera estació de descàrrega
+                        if (estacio_desti.num_bicicletas_next - estacio_desti.demanda < 0):
+                            if (estacio_origen.num_bicicletas_no_usadas > abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda))
+                                descarrega1 = abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda)
+                            else:
+                                descarrega1 = estacio_origen.num_bicicletas_no_usadas
+                        
+                        carrega += descarrega1
+                        estacio_origen.num_bicicletas_no_usadas -= descarrega1
+
+                        if estacio_origen.num_bicicletas_no_usadas != 0:
+                            # Busca l'estació de descàrrega més propera per a la segona estació
+                            distancia_minima2, est_descarrega_propera2 = float('inf'), None
+                            for est_des in action.estacions.lista_estaciones:
+                                if (est_des.num_bicicletas_next - est_des.demanda < 0) and est_des is not estacio_desti and est_des is not estacio_origen:
+                                    distancia = dist_estacions(estacio_desti, est_des)
+                                    if distancia < distancia_minima2:
+                                        distancia_minima2 = distancia
+                                        estacio_desti2 = est_des
+
+                            if estacio_desti2 is not None:
+                                # Calcula la quantitat de bicicletes a descarregar a la segona estació
+                                if (estacio_desti.num_bicicletas_next - estacio_desti.demanda < 0):
+                                    if (estacio_origen.num_bicicletas_no_usadas > abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda))
+                                        descarrega2 = abs(estacio_desti.num_bicicletas_next - estacio_desti.demanda)
+                                    else:
+                                        descarrega2 = estacio_origen.num_bicicletas_no_usadas
+
+                            carrega += descarrega2
+                            estacio_origen.num_bicicletas_no_usadas -= descarrega2
+                            
+                # Crea una nova furgoneta amb l'estació d'origen, la càrrega i les estacions de descàrrega
+                nova_furgo = Furgonetes(estacio_origen, carrega, estacio_desti, descarrega1, estacio_desti2, descarrega2)
+
+                # Afegix la nova furgoneta a la flota
+                action.flota.append(nova_furgo)
+
 
         elif isinstance(action, Esborrar_Furgoneta):
             estacio_origen = action.estacio_origen 

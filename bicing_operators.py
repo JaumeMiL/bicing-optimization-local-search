@@ -1,6 +1,6 @@
 
 from bicing_furgonetes import Furgonetes
-from bicing_estacions import Estacion
+from abia_bicing import Estacion
 
 class Operadors:
     pass
@@ -54,6 +54,11 @@ class Canviar_Estacio_Carr(Operadors):
         return f"Canvia l'estació d'origen de la furgoneta de {self.estacio_origen_actual} a {self.nova_estacio_origen}"
 
     
+class Afegir_Furgoneta(Operadors):
+    def __init__(self):
+        pass
+    def __repr__(self):
+        return f"Ageigeix una nova furgoneta"
 
 
 class Esborrar_Furgoneta(Operadors):
