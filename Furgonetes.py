@@ -14,7 +14,7 @@ class Furgonetes(object):
         self.bicis_furgo = bicis_furgo  # Nombre de bicis que porta a sobre
         self.bicis_primera = bicis_primera  # Nombre de bicis que es deixen a la primera estació
         self.bicis_segona = bicis_segona  # Nombre de bicis que es deixen a la segona estació
-        capacitat_maxima = 30 #capacitat màxima de la
+        capacitat_maxima = 30 #capacitat màxima de la furgo
 
         if primera_est is None:
             assert bicis_primera == 0  # Si no hi ha primera estació, la quantitat de bicis ha de ser 0
