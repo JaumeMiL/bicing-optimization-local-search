@@ -4,8 +4,6 @@ from aima.search import Problem
 from bicing_operators import Operadors
 from bicing_estat import Estat
 
-
-
 class BicingProblem(Problem):
     def __init__(self, initial_state: Estat, use_entropy: bool = False):
         self.use_entropy = use_entropy

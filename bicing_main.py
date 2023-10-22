@@ -2,8 +2,7 @@ import random
 import time
 
 from aima.search import hill_climbing, simulated_annealing
-
-from abia_bicing import Estacion, Estaciones
+from abia_bicing import Estaciones
 from bicing_parametres import Parametres
 from bicing_problem import *
 from bicing_estat import genera_estat_inicial_1, genera_estat_inicial_0, genera_estat_inicial_2, Estat
