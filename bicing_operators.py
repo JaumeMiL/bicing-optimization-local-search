@@ -120,10 +120,13 @@ class Bici_Estacio2_A_Estacio1(Operadors):
             return f"Una bicicleta que anava a l'estació {self.estacio_desti2} ara anirà a l'estació {self.estacio_desti}"
 
 class CanviaEst1(Operadors):
-    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int):
+    
+    def __init__(self, estacio_origen, estacio_desti, estacio_desti2, estacio_nova, lista_estaciones):
         self.estacio_origen = estacio_origen
         self.estacio_desti = estacio_desti
         self.estacio_desti2 = estacio_desti2
+        self.estacio_nova = estacio_nova
+        self.lista_estaciones = lista_estaciones
     
     def __repr__(self) -> str: 
         return f"Canvia la primera estació de la furgoneta {self.estacio_desti}"
