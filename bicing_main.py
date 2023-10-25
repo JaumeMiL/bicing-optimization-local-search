@@ -35,7 +35,7 @@ params = params = Parametres(25, 1250, 42, 5, 30)
 estacions = Estaciones(params.n_estacions, params.n_bicis, params.llavor)
 
 time_start = time.time()
-estat_inicial = genera_estat_inicial_1(params, estacions)
+estat_inicial = genera_estat_inicial_1(params, estacions) #estat inicial bo = 2
 h_inicial = estat_inicial.heuristica1()
 n = hill_climbing(BicingProblem(estat_inicial))
 time_end = time.time()
@@ -49,6 +49,12 @@ for furgoneta in estat_inicial.flota:
         recorregut_furgo += dist_estacions(furgoneta.primera_est, furgoneta.segona_est)
     recorregut_total += recorregut_furgo
 
-print(f"\nExperiment 7: \n Benefici_inicial: {h_inicial}€ Benefici_final: {n.heuristica1()}€")
+print(f"\nEXPERIMENT 7: \nBenefici_inicial: {h_inicial}€ Benefici_final: {n.heuristica1()}€")
 print(f"\nTemps: {total_time} ms")
 print(f"\nRecorregut: {recorregut_total} m")
+print(f"Nombre d'estats Generats: {Estat.Contador_Estats}")
+Estat.Contador_Estats = 0
+
+#EXPERIMENT 1
+params = Parametres(25, 1250, random.randint(2,5000), 5, 30)
+estacions = Estaciones(params.n_estacions, params.n_bicis, params.llavor)
