@@ -12,6 +12,7 @@ class DescarregarBicis(Operadors):
         self.estacio_origen = estacio_origen
         self.estacio_desti = estacio_desti
         self.estacio_desti2 = estacio_desti2
+        self.flota = flota
             
     def __repr__(self) -> str:
         if self.estacio_desti2:
@@ -58,7 +59,7 @@ class Afegir_Furgoneta(Operadors):
     def __init__(self):
         pass
     def __repr__(self):
-        return f"Ageigeix una nova furgoneta"
+        return f"Afeigeix una nova furgoneta"
 
 
 class Esborrar_Furgoneta(Operadors):
@@ -140,3 +141,23 @@ class CanviaEst2(Operadors):
     def __repr__(self) -> str: 
         if self.estacio_desti2:
             return f"Canvia la segona estació de la furgoneta {self.estacio_desti2}"
+        
+class AfegirEst1(Operadors):
+    def __init__(self, estacio_origen: int, lista_estaciones: list, flota: list):
+        self.estacio_origen = estacio_origen
+        self.lista_estaciones = lista_estaciones
+        self.flota = flota
+    
+    
+    def __repr__(self) -> str:
+        return f"Afegeix una primera estació a la furgoneta que comença a {self.estacio_origen}"
+    
+class AfegirEst2(Operadors): 
+    def __init__(self, estacio_origen: int, estacio_desti1: int, lista_estaciones: list, flota: list):
+        self.estacio_origen = estacio_origen
+        self.estacio_desti1 = estacio_desti1
+        self.lista_estaciones = lista_estaciones
+        self.flota = flota
+    
+    def __repr__(self) -> str:
+        return f"Afegeix una segona estació a la furgoneta que comença a {self.estacio_origen}"

@@ -70,7 +70,7 @@ class Estat(object):
                 self.estacions == other.estacions and 
                 self.estacions_origen == other.estacions_origen)
     
-
+    
     #Genera accions ha de generar totes les accions possibles a partir de l'estat actual. Utilitzant cada operador per intentar trobar una millora sobre el benefici inicial
     def genera_accions(self):
         
@@ -158,6 +158,7 @@ class Estat(object):
 
             furgoneta.primera_est = estacio_desti
             furgoneta.segona_est = estacio_desti2
+
 
         elif isinstance(action, Eliminar_Seg_Est):
             estacio_origen = action.estacio_origen 
@@ -320,6 +321,10 @@ class Estat(object):
                     furgoneta.bicis_primera += 1
                     furgoneta.bicis_segona -= 1
             
+            #trobar la furgoneta dins flota i actualitzar-la
+
+
+            
         elif isinstance (action, CanviaEst1):
             estacio_origen = action.estacio_origen
             estacio_desti = action.estacio_desti
@@ -328,6 +333,7 @@ class Estat(object):
             estacions_ordenades = sorted(action.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
             estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
             estacio_nova = None
+            
 
             if furgoneta is not None:
                 for estacio_temporal in estacions_descarrega:
@@ -344,6 +350,7 @@ class Estat(object):
             estacio_origen = action.estacio_origen
             estacio_desti = action.estacio_desti
             estacio_desti2 = action.estacio_desti2
+            
             furgoneta = find_furgoneta_by_origen(estacio_origen)
             estacions_ordenades = sorted(action.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
             estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
@@ -361,41 +368,51 @@ class Estat(object):
 
         elif isinstance (action, AfegirEst1):
             estacio_origen = action.estacio_origen
+            lista_estaciones = action.lista_estaciones
             furgoneta = find_furgoneta_by_origen(estacio_origen)
-            estacions_ordenades = sorted(action.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
+            estacions_ordenades = sorted(lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
             estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
             estacio_nova = None
 
             if furgoneta is not None:
                 for estacio_temporal in estacions_descarrega:
-                    if estacio_temporal != estacio_desti2 and estacio_temporal not in self.estacions_origen:
+                    if estacio_desti is None and estacio_temporal != estacio_desti2 and estacio_temporal not in self.estacions_origen:
                         if estacio_nova is None or dist_estacions(estacio_origen, estacio_nova) > dist_estacions(estacio_origen, estacio_temporal):
                             estacio_nova = estacio_temporal
                 
                 if estacio_nova is not None:
                     furgoneta.primera_est = estacio_nova
-                    estacio_desti = estacio_nova
-            #Descarreguem les bicis a l'estació que està més a prop, que no sigui ni l'estació destí ni l'estació destí2 i que tingui demanda
-            
-        elif isinstance (action, AfegirEst1):
+                    #hem de carregar la furgoneta
+                    if (estacio_nova.demanda > estacio_nova.num_bicicletas_no_usadas):
+                        furgoneta.bicis_primera = estacio_origen.num_bicicletas_no_usadas
+                        furgoneta.bicis_carregades += estacio_origen.num_bicicletas_no_usadas
+                    else:
+                        furgoneta.bicis_primera = estacio_nova.demanda
+                        furgoneta.bicis_carregades += estacio_nova.demanda
+
+#Només es pot afegir segona estació si ja hi ha la primera estació
+        elif isinstance (action, AfegirEst2):
             estacio_origen = action.estacio_origen
-            estacio_desti = action.estacio_desti
-            estacio_desti2 = action.estacio_desti2
             furgoneta = find_furgoneta_by_origen(estacio_origen)
             estacions_ordenades = sorted(action.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
             estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
             estacio_nova = None
 
-            if furgoneta is not None and estacio_desti2 is not None:
+            if furgoneta is not None and furgoneta.primera_est is not None:
                 for estacio_temporal in estacions_descarrega:
-                    if estacio_temporal != estacio_desti and estacio_temporal != estacio_desti2 and estacio_temporal not in self.estacions_origen:
+                    if estacio_desti is None and estacio_temporal != estacio_desti2 and estacio_temporal not in self.estacions_origen:
                         if estacio_nova is None or dist_estacions(estacio_origen, estacio_nova) > dist_estacions(estacio_origen, estacio_temporal):
                             estacio_nova = estacio_temporal
                 
                 if estacio_nova is not None:
                     furgoneta.segona_est = estacio_nova
-                    estacio_desti2 = estacio_nova
-                    
+                    #hem de carregar la furgoneta
+                    if (estacio_nova.demanda > estacio_nova.num_bicicletas_no_usadas):
+                        furgoneta.bicis_segona = estacio_origen.num_bicicletas_no_usadas
+                        furgoneta.bicis_carregades += estacio_origen.num_bicicletas_no_usadas
+                    else:
+                        furgoneta.bicis_segona = estacio_nova.demanda
+                        furgoneta.bicis_carregades += estacio_nova.demanda
                     
         return new_state
 
