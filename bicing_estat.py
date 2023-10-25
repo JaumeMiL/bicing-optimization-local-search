@@ -70,13 +70,16 @@ class Estat(object):
                 self.estacions == other.estacions and 
                 self.estacions_origen == other.estacions_origen)
     
+    '''
     #Genera accions ha de generar totes les accions possibles a partir de l'estat actual. Utilitzant cada operador per intentar trobar una millora sobre el benefici inicial
     def genera_accions(self):
         
         # Per cada furgoneta amb dos destins, intentar intercanviar els destins
+
         for furgoneta in self.flota:
             if furgoneta.primera_est is not None and furgoneta.segona_est is not None:
                 yield Intercanviar_Estacions(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+    
 
         # Para cada furgoneta amb un segon desti, intentar eliminar-lo
         for furgoneta in self.flota:
@@ -90,16 +93,18 @@ class Estat(object):
                 if estacio_nova != furgoneta.origen and estacio_nova not in self.estacions_origen:
                     yield Canviar_Estacio_Carr(furgoneta.origen, estacio_nova)
 
-        
+      
         # Intentar eliminar cada furgoneta
+        #EMPITJORA EL RESULTAT
         for furgoneta in self.flota:
             yield Esborrar_Furgoneta(furgoneta.origen)
-        
+
         
         for furgoneta in self.flota:
             estacio_origen = furgoneta.origen
-            if estacio_origen.num_bicicletas_no_usadas >= 2 or (estacio_origen.num_bicicletas_no_usadas >= 1 and furgoneta.segona_est == None):
-                yield Carregar_Dues_Bicicletes_Més(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+            if estacio_origen is not None and furgoneta is not None and furgoneta.segona_est is not None:
+                if estacio_origen.num_bicicletas_no_usadas >= 2 or (estacio_origen.num_bicicletas_no_usadas >= 1 and furgoneta.segona_est == None):
+                    yield Carregar_Dues_Bicicletes_Més(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
 
         for furgoneta in self.flota:
             if (furgoneta.bicis_primera >= 1 and furgoneta.bicis_segona >= 1) or (furgoneta.bicis_primera >= 1 and furgoneta.segona_est == None):
@@ -132,7 +137,49 @@ class Estat(object):
                 if furgoneta.segona_est and estacio_temporal != furgoneta.primera_est and estacio_temporal != furgoneta.segona_est and estacio_temporal not in self.estacions_origen:
                     if dist_estacions(estacio_origen, estacio_temporal) < dist_estacions(estacio_origen, furgoneta.segona_est):
                         yield CanviaEst2(estacio_origen, furgoneta.primera_est, furgoneta.segona_est, estacio_temporal, self.estacions.lista_estaciones)
-    
+    '''
+    def genera_accions(self):
+        # Generate actions for each van
+        for furgoneta in self.flota:
+            if furgoneta.primera_est is not None:
+                yield Eliminar_Seg_Est(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+            if furgoneta.segona_est is not None:
+                yield Eliminar_Seg_Est(furgoneta.origen)
+            for estacio_nova in range(len(self.estacions.lista_estaciones)):
+                if estacio_nova != furgoneta.origen and estacio_nova not in self.estacions_origen:
+                    yield Canviar_Estacio_Carr(furgoneta.origen, estacio_nova)
+            for estacio_desti in self.estacions.lista_estaciones:
+                if furgoneta.origen != estacio_desti:
+                    yield Intercanviar_Estacions(furgoneta.origen, furgoneta.primera_est, estacio_desti)
+                    if furgoneta.segona_est is not None:
+                        yield Intercanviar_Estacions(furgoneta.origen, furgoneta.segona_est, estacio_desti)
+
+        # Generate actions to load/unload bikes
+        for furgoneta in self.flota:
+            if furgoneta.primera_est is not None:
+                yield Carregar_Dues_Bicicletes_Més(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+                yield Bici_Estacio1_A_Estacio2(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+            if furgoneta.segona_est is not None:
+                yield Carregar_Dues_Bicicletes_Menys(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+                yield Bici_Estacio2_A_Estacio1(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
+
+        # Generate actions to change delivery stations
+        estacions_ordenades = sorted(self.estacions.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
+        estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
+        for furgoneta in self.flota:
+            estacio_origen = furgoneta.origen
+            for estacio_temporal in estacions_descarrega:
+                if estacio_temporal != furgoneta.primera_est and estacio_temporal != furgoneta.segona_est and estacio_temporal not in self.estacions_origen:
+                    yield CanviaEst1(estacio_origen, furgoneta.primera_est, furgoneta.segona_est, estacio_temporal, self.estacions.lista_estaciones)
+
+        for furgoneta in self.flota:
+            estacio_origen = furgoneta.origen
+            estacions_ordenades = sorted(self.estacions.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
+            estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
+            for estacio_temporal in estacions_descarrega:
+                if furgoneta.segona_est and estacio_temporal != furgoneta.primera_est and estacio_temporal != furgoneta.segona_est and estacio_temporal not in self.estacions_origen:
+                    yield CanviaEst2(estacio_origen, furgoneta.primera_est, furgoneta.segona_est, estacio_temporal, self.estacions.lista_estaciones)
+
     def aplica_accions(self, action: Operadors):
         new_state = self.__copy__()
 
@@ -140,44 +187,7 @@ class Estat(object):
             for furgoneta in new_state.flota:
                 if furgoneta.origen == estacio_origen:
                     return furgoneta
-        
-        """if isinstance(action, DescarregarBicis):
-            estacio_origen = action.estacio_origen 
-            estacio_desti = action.estacio_desti
-            estacio_desti2 = action.estacio_desti2
-            furgoneta = find_furgoneta_by_origen(estacio_origen)
-            
-            # Calcula les bicis a enviar a cada destinació
-            demanda_desti = new_state.estacions.lista_estaciones[estacio_desti].demanda
-            bicis_a_enviar = min(furgoneta.capacitat, new_state.estacions.lista_estaciones[estacio_origen].num_bicicletas_next, demanda_desti)
-            bicis_a_enviar_desti1 = bicis_a_enviar
-
-            bicis_a_enviar_desti2 = 0
-            if estacio_desti2 is not None:
-                demanda_desti2 = new_state.estacions.lista_estaciones[estacio_desti2].demanda
-                bicis_a_enviar_desti2 = min(furgoneta.capacitat - bicis_a_enviar_desti1, demanda_desti2)
-                bicis_a_enviar += bicis_a_enviar_desti2
-
-            # Descarrega bicis al destí 1
-            new_state.estacions.lista_estaciones[estacio_desti].num_bicicletas_no_usadas += bicis_a_enviar_desti1
-
-            # Descarrega bicis al destí 2 si existeix
-            if estacio_desti2:
-                new_state.estacions.lista_estaciones[estacio_desti2].num_bicicletas_no_usadas += bicis_a_enviar_desti2
-
-            # Actualitza la furgoneta i les estacions destí
-            furgoneta.primera_est = estacio_desti
-            furgoneta.bicis_primera = bicis_a_enviar_desti1
-            new_state.estacions.lista_estaciones[estacio_desti].num_bicicletas_no_usadas += bicis_a_enviar_desti1
-
-            if estacio_desti2:
-                furgoneta.segona_est = estacio_desti2
-                furgoneta.bicis_segona = bicis_a_enviar_desti2
-                new_state.estacions.lista_estaciones[estacio_desti2].num_bicicletas_no_usadas += bicis_a_enviar_desti2
-
-            # Marca el viatge com a realitzat
-            furgoneta.viatge_fet = True """
-        
+                
         if isinstance(action, Intercanviar_Estacions):
             estacio_origen = action.estacio_origen 
             estacio_desti = action.estacio_desti
@@ -268,10 +278,6 @@ class Estat(object):
             
             # Si hi ha bicis carregades, les retorna a l'estació d'origen
             if furgoneta is not None:
-                if furgoneta.bicis_carregades > 0:
-                    furgoneta.bicis_carregades = 0
-                    furgoneta.primera_est = None
-                    furgoneta.segona_est = None
                 new_state.flota.remove(furgoneta)
 
         elif isinstance(action, Canviar_Estacio_Carr):
@@ -401,7 +407,7 @@ class Estat(object):
     # Genera
     def heuristica1(self):
         ingresos = sum(furgoneta.ingresos() for furgoneta in self.flota)
-        perdues = sum(furgoneta.perdues() for furgoneta in self.flota)
+        perdues = sum(furgoneta.perdues() for furgoneta in self.flota if furgoneta.perdues() is not None)
         return ingresos - perdues
     
     def heuristica2(self): 

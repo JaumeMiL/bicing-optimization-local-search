@@ -3,6 +3,7 @@ import random
 from abia_bicing import Estacion, Estaciones
 
 def dist_estacions(est1: Estacion, est2: Estacion) -> int:
+    distancia = 0
     if est1 is not None and est2 is not None:
         distancia = abs(est1.coordX - est2.coordX) + abs(est1.coordY - est2.coordY)
     return distancia
