@@ -1,6 +1,5 @@
-from copy import deepcopy
 from typing import List, Generator
-
+from copy import copy
 from abia_bicing import Estacion, Estaciones
 from bicing_furgonetes import Furgonetes, dist_estacions
 from bicing_parametres import Parametres
@@ -15,11 +14,47 @@ class Estat(object):
         self.flota =  flota
         self.estacions = estacions
         self.estacions_origen = estacions_origen
+    
+    def __copy__(self):
+        # Nou estat
+        new_state = Estat(self.params, self.flota, self.estacions, self.estacions_origen)
 
+        # Copia contador d'estats
+        new_state.Contador_Estats = self.Contador_Estats
 
-    def __copy__(self): #això no funciona de moment
-        next_est = Estat(parametres: Parametres,  flota: List[Furgonetes], estacions: Estaciones, estacions_origen)
-        pass deepcopy(next_est)
+        
+        # Còpia de paràmetres, les següents variables són paràmetres:
+        new_state.params.n_estacions = self.params.n_estacions
+        new_state.params.n_bicis = self.params.n_bicis
+        new_state.params.llavor =  self.params.llavor
+        new_state.params.n_furgonetes =  self.params.n_furgonetes
+        new_state.params.max_bicicletes = self.params.max_bicicletes
+
+        # Copia la flota atribut a atribut
+        for i in range(len(self.flota)):
+            new_state.flota[i].origen = self.flota[i].origen
+            new_state.flota[i].primera_est = self.flota[i].primera_est
+            new_state.flota[i].segona_est = self.flota[i].segona_est
+            new_state.flota[i].bicis_carregades = self.flota[i].bicis_carregades
+            new_state.flota[i].bicis_primera = self.flota[i].bicis_primera
+            new_state.flota[i].bicis_segona = self.flota[i].bicis_segona
+
+        # Copia les estacions atribut a atribut
+        new_state.estacions.num_bicicletas = self.estacions.num_bicicletas
+        new_state.estacions.rng = self.estacions.rng
+        new_state.estacions.lista_estaciones: list[Estacion] = []
+
+        for est in range(len(self.estacions.lista_estaciones)):
+            new_state.estacions.lista_estaciones[est].coordX = self.estacions.lista_estaciones[est].coordX
+            new_state.estacions.lista_estaciones[est].coordY = self.estacions.lista_estaciones[est].coordY
+            new_state.estacions.lista_estaciones[est].num_bicicletas_no_usadas = self.estacions.lista_estaciones[est].num_bicicletas_no_usadas
+            new_state.estacions.lista_estaciones[est].num_bicicletas_next = self.estacions.lista_estaciones[est].num_bicicletas_next
+
+        # Copia les estacions origen
+        for est_org in self.estacions_origen:
+            new_state.estacions_origen.add(est_org)
+        
+        return new_state
         
     def __repr__(self) -> str:
 
@@ -99,7 +134,7 @@ class Estat(object):
                         yield CanviaEst2(estacio_origen, furgoneta.primera_est, furgoneta.segona_est, estacio_temporal, self.estacions.lista_estaciones)
     
     def aplica_accions(self, action: Operadors):
-        new_state = self.copy()
+        new_state = self.__copy__()
 
         def find_furgoneta_by_origen(estacio_origen):
             for furgoneta in new_state.flota:
@@ -244,7 +279,7 @@ class Estat(object):
             # La nova estacio origen ha de ser una estacio que no sigui origen de cap furgoneta i que tingui moltes bicis en excedent
             
             # Obté una llista de totes les estacions que no són l'origen de cap furgoneta
-            estacions_candidates = [estacio for estacio in new_state.lista_estaciones if estacio not in new_state.estacions_origen]
+            estacions_candidates = [estacio for estacio in new_state.estacions.lista_estaciones if estacio not in new_state.estacions_origen]
 
             nova_estacio_origen = None
             max_bicicletes_en_excedent = 0
