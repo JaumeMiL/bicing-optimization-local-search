@@ -32,7 +32,7 @@ for Furgonetes in estat_inicial.flota:
     """
 
 #EXPERIMENT 7
-params = params = Parametres(25, 1250, 42, 5, 30)
+params = Parametres(25, 1250, 42, 5, 30)
 estacions = Estaciones(params.n_estacions, params.n_bicis, params.llavor)
 
 time_start = time.time()

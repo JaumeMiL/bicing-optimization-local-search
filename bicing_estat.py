@@ -1,5 +1,5 @@
 from typing import List, Generator
-from copy import copy
+from copy import copy, deepcopy
 from abia_bicing import Estacion, Estaciones
 from bicing_furgonetes import Furgonetes, dist_estacions
 from bicing_parametres import Parametres
@@ -15,22 +15,30 @@ class Estat(object):
         self.estacions = estacions
         self.estacions_origen = estacions_origen
     
+    """
+    #copia antic
     def __copy__(self):
-        # Nou estat
+        flota_copy = deepcopy(self.flota)
+        estacions_copy = deepcopy(self.estacions)
+        estacions_origen_copy = deepcopy(self.estacions_origen)
+        
+        return Estat(self.params, flota_copy, estacions_copy, estacions_origen_copy)
+    """
+
+    def __copy__(self):
         new_state = Estat(self.params, self.flota, self.estacions, self.estacions_origen)
 
-        # Copia contador d'estats
+        # Copy the contador_estats
         new_state.Contador_Estats = self.Contador_Estats
 
-        
-        # Còpia de paràmetres, les següents variables són paràmetres:
+        # Copy parameters
         new_state.params.n_estacions = self.params.n_estacions
         new_state.params.n_bicis = self.params.n_bicis
-        new_state.params.llavor =  self.params.llavor
-        new_state.params.n_furgonetes =  self.params.n_furgonetes
+        new_state.params.llavor = self.params.llavor
+        new_state.params.num_furgonetes = self.params.num_furgonetes
         new_state.params.max_bicicletes = self.params.max_bicicletes
 
-        # Copia la flota atribut a atribut
+        # Copy the fleet attribute by attribute
         for i in range(len(self.flota)):
             new_state.flota[i].origen = self.flota[i].origen
             new_state.flota[i].primera_est = self.flota[i].primera_est
@@ -39,30 +47,28 @@ class Estat(object):
             new_state.flota[i].bicis_primera = self.flota[i].bicis_primera
             new_state.flota[i].bicis_segona = self.flota[i].bicis_segona
 
-        # Copia les estacions atribut a atribut
+        # Copy the stations attribute by attribute
         new_state.estacions.num_bicicletas = self.estacions.num_bicicletas
         new_state.estacions.rng = self.estacions.rng
-        new_state.estacions.lista_estaciones: list[Estacion] = []
+        new_state.estacions.lista_estaciones = []
 
-        for est in range(len(self.estacions.lista_estaciones)):
-            new_state.estacions.lista_estaciones[est].coordX = self.estacions.lista_estaciones[est].coordX
-            new_state.estacions.lista_estaciones[est].coordY = self.estacions.lista_estaciones[est].coordY
-            new_state.estacions.lista_estaciones[est].num_bicicletas_no_usadas = self.estacions.lista_estaciones[est].num_bicicletas_no_usadas
-            new_state.estacions.lista_estaciones[est].num_bicicletas_next = self.estacions.lista_estaciones[est].num_bicicletas_next
+        for est in self.estacions.lista_estaciones:
+            new_est = Estacion(
+                est.coordX, est.coordY, est.num_bicicletas_no_usadas, est.num_bicicletas_next
+            )
+            new_state.estacions.lista_estaciones.append(new_est)
 
-        # Copia les estacions origen
-        for est_org in self.estacions_origen:
-            new_state.estacions_origen.add(est_org)
-        
+        # Copy the origin stations
+        new_state.estacions_origen = set(self.estacions_origen)
+
         return new_state
-        
-    def __repr__(self) -> str:
+    
 
+    def __repr__(self) -> str:
         return f"Estat(Flota: {self.flota}, Estaciones: {len(self.estacions.lista_estaciones)}, Estaciones Origen: {self.estacions_origen})"
     
     
     def __eq__(self, other: "Estat") -> bool:
-        
         #Compara si dos estats son iguals.
         if not isinstance(other, Estat):
             return False
@@ -73,19 +79,21 @@ class Estat(object):
     
     #Genera accions ha de generar totes les accions possibles a partir de l'estat actual. Utilitzant cada operador per intentar trobar una millora sobre el benefici inicial
     def genera_accions(self):
-        
-        # Per cada furgoneta amb dos destins, intentar intercanviar els destins
 
+        if len(self.flota) < self.params.num_furgonetes:
+            yield Afegir_Furgoneta()
+
+        # Per cada furgoneta amb dos destins, intentar intercanviar els destins
         for furgoneta in self.flota:
             if furgoneta.primera_est is not None and furgoneta.segona_est is not None:
                 yield Intercanviar_Estacions(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
-    
+        
         
         # Para cada furgoneta amb un segon desti, intentar eliminar-lo
         for furgoneta in self.flota:
             if furgoneta.segona_est is not None:
                 yield Eliminar_Seg_Est(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
-
+        
         
         # Per cada furgoneta i estació, intentar canviar l'estació de origen de la furgoneta
         for furgoneta in self.flota:
@@ -93,19 +101,19 @@ class Estat(object):
                 if estacio_nova != furgoneta.origen and estacio_nova not in self.estacions_origen:
                     yield Canviar_Estacio_Carr(furgoneta.origen, estacio_nova)
         
-
+        
         # Intentar eliminar cada furgoneta
         #EMPITJORA EL RESULTAT
         for furgoneta in self.flota:
             yield Esborrar_Furgoneta(furgoneta.origen)
-  
+    
         
         for furgoneta in self.flota:
             estacio_origen = furgoneta.origen
             if estacio_origen is not None and furgoneta is not None and furgoneta.segona_est is not None:
                 if estacio_origen.num_bicicletas_no_usadas >= 2 or (estacio_origen.num_bicicletas_no_usadas >= 1 and furgoneta.segona_est == None):
                     yield Carregar_Dues_Bicicletes_Més(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
-
+        
         for furgoneta in self.flota:
             if (furgoneta.bicis_primera >= 1 and furgoneta.bicis_segona >= 1) or (furgoneta.bicis_primera >= 1 and furgoneta.segona_est == None):
                 yield Carregar_Dues_Bicicletes_Menys(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
@@ -156,12 +164,13 @@ class Estat(object):
             estacio_desti = estacio_desti2
             estacio_desti2 = estacio_temporal
 
-            furgoneta.primera_est = estacio_desti
-            furgoneta.segona_est = estacio_desti2
+            if furgoneta is not None:
 
+                furgoneta.primera_est = estacio_desti
+                furgoneta.segona_est = estacio_desti2
 
         elif isinstance(action, Eliminar_Seg_Est):
-            estacio_origen = action.estacio_origen 
+            estacio_origen = action.estacio_origen
             estacio_desti = action.estacio_desti
             furgoneta = find_furgoneta_by_origen(estacio_origen)
             
@@ -169,7 +178,7 @@ class Estat(object):
             if furgoneta is not None and furgoneta.segona_est is not None:
                 furgoneta.bicis_segona = 0
             if furgoneta is not None:
-                furgoneta.segona_est = None
+                furgoneta.segona_est = None 
 
 
         elif isinstance(action, Afegir_Furgoneta):
@@ -436,7 +445,7 @@ def genera_estat_inicial_0(params: Parametres, estacions: Estaciones):
 
 # Genera un estat inicial on les estacions de carega i descarrega de les furgonetes es en funció de l'ordre de les estacions
 def genera_estat_inicial_1(params: Parametres, estacions: Estaciones):
-    def iterar_estacions(Estaciones) -> Generator[Estacion, None, None]:
+    def iterar_estacions(Estaciones):
         return (estacio for estacio in estacions.lista_estaciones)
     iterador_est = iterar_estacions(estacions)
     flota = []
@@ -446,8 +455,10 @@ def genera_estat_inicial_1(params: Parametres, estacions: Estaciones):
         estacions_origen.add(estacio_origen)
         carrega = estacio_origen.num_bicicletas_no_usadas
         primera_est = next(iterador_est)
-        bicis_primera = carrega
-        flota.append(Furgonetes(estacio_origen, carrega, primera_est, bicis_primera))
+        bicis_primera = carrega//2
+        segona_est = next(iterador_est)
+        bicis_segona = carrega//2
+        flota.append(Furgonetes(estacio_origen, carrega, primera_est, bicis_primera, segona_est, bicis_segona))
     return Estat(params, flota, estacions, estacions_origen)
 
 #Genera un estat inicial que recull biciletes en les estacions amb més bicicletes_no_usades i les porta a les estacions amb demanda més properes

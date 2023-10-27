@@ -23,26 +23,26 @@ class Furgonetes(object):
             assert bicis_segona == 0  # Si no hi ha segona estació, la quantitat de bicis ha de ser 0
     
     def cost_gasolina(self):
-            cost_gas = 0
+        cost_gas = 0
 
-            # Obtenim les variables necessàries
-            bicis_carregades = self.bicis_carregades
-            bicis_primera = self.bicis_primera 
-            bicis_segona = self.bicis_segona
-            origen = self.origen
-            primera_est = self.primera_est
-            segona_est = self.segona_est
+        # Obtenim les variables necessàries
+        bicis_carregades = self.bicis_carregades
+        bicis_primera = self.bicis_primera 
+        bicis_segona = self.bicis_segona
+        origen = self.origen
+        primera_est = self.primera_est
+        segona_est = self.segona_est
 
-            # si existeix la primera estació calculem el cost de la gasolina d'anar-hi
-            if primera_est is not None and origen is not None and bicis_primera != 0:
-                cost_gas += (((bicis_carregades + 9)//10) * dist_estacions(origen, primera_est)/1000)
+        # si existeix la primera estació calculem el cost de la gasolina d'anar-hi
+        if primera_est is not None and origen is not None and bicis_primera != 0:
+            cost_gas += (((bicis_carregades + 9)//10) * dist_estacions(origen, primera_est)/1000)
 
-                # si existeix la segona estació calculem el cost de la gasolina d'anar-hi
-                if segona_est is not None and bicis_segona != 0:
-                    cost_gas += (((bicis_carregades - bicis_primera + 9)//10) * dist_estacions(primera_est, segona_est)/1000)
-            
-            return cost_gas
-    
+            # si existeix la segona estació calculem el cost de la gasolina d'anar-hi
+            if segona_est is not None and bicis_segona != 0:
+                cost_gas += (((bicis_carregades - bicis_primera + 9)//10) * dist_estacions(primera_est, segona_est)/1000)
+        
+        return cost_gas
+
     def ingresos(self):
         primera_est = self.primera_est
         segona_est = self.segona_est
