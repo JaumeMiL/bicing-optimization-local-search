@@ -466,7 +466,7 @@ def genera_estat_inicial_2(params: Parametres, estacions: Estaciones):
     flota = []
     estacions_ordenades = sorted(estacions.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
     estacions_excedent = [est for est in estacions_ordenades if est.num_bicicletas_next > est.demanda]
-    estacions_carrega = estacions_excedent[0:params.n_furgonetes]
+    estacions_carrega = estacions_excedent[0:params.num_furgonetes]
     estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
     
     for est_carrega in estacions_carrega:
