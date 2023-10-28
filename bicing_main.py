@@ -36,7 +36,7 @@ params = Parametres(25, 1250, 42, 5, 30)
 estacions = Estaciones(params.n_estacions, params.n_bicis, params.llavor)
 
 time_start = time.time()
-estat_inicial = genera_estat_inicial_2(params, estacions) #estat inicial bo = 2
+estat_inicial = genera_estat_inicial_1(params, estacions) #estat inicial bo = 2
 h_inicial = estat_inicial.heuristica1()
 n = hill_climbing(BicingProblem(estat_inicial))
 h_final = n.heuristica1()

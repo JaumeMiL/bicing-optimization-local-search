@@ -4,10 +4,6 @@ from abia_bicing import Estacion
 class Operadors:
     pass
 
-
-
-
-
 class DescarregarBicis(Operadors):
     def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int = None):
         self.estacio_origen = estacio_origen
@@ -30,7 +26,6 @@ class Intercanviar_Estacions(Operadors):
         
     def __repr__(self) -> str:
             return f"Intercanvia el recorregut de les estacions, primer es va a {self.estacio_desti2} i després a {self.estacio_desti}"
-        
 
 
 
@@ -55,8 +50,9 @@ class Canviar_Estacio_Carr(Operadors):
 
     
 class Afegir_Furgoneta(Operadors):
-    def __init__(self):
-        pass
+    def __init__(self, flota: list, estacions):
+        self.flota = flota
+        self.estacions = estacions
     def __repr__(self):
         return f"Afeigeix una nova furgoneta"
 
@@ -132,10 +128,12 @@ class CanviaEst1(Operadors):
         return f"Canvia la primera estació de la furgoneta {self.estacio_desti}"
     
 class CanviaEst2(Operadors):
-    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int):
+    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int, estacio_nova, lista_estaciones):
         self.estacio_origen = estacio_origen
         self.estacio_desti = estacio_desti
         self.estacio_desti2 = estacio_desti2
+        self.estacio_nova = estacio_nova
+        self.lista_estaciones = lista_estaciones
     
     def __repr__(self) -> str: 
         if self.estacio_desti2:

@@ -15,58 +15,17 @@ class Estat(object):
         self.estacions = estacions
         self.estacions_origen = estacions_origen
     
-    """
-    #copia antic
     def __copy__(self):
-        flota_copy = deepcopy(self.flota)
-        estacions_copy = deepcopy(self.estacions)
-        estacions_origen_copy = deepcopy(self.estacions_origen)
-        
-        return Estat(self.params, flota_copy, estacions_copy, estacions_origen_copy)
-    """
-
-    def __copy__(self):
-        new_state = Estat(self.params, self.flota, self.estacions, self.estacions_origen)
+        new_state = Estat(self.params, deepcopy(self.flota), deepcopy(self.estacions), deepcopy(self.estacions_origen))
 
         # Copy the contador_estats
         new_state.Contador_Estats = self.Contador_Estats
 
-        # Copy parameters
-        new_state.params.n_estacions = self.params.n_estacions
-        new_state.params.n_bicis = self.params.n_bicis
-        new_state.params.llavor = self.params.llavor
-        new_state.params.num_furgonetes = self.params.num_furgonetes
-        new_state.params.max_bicicletes = self.params.max_bicicletes
-
-        # Copy the fleet attribute by attribute
-        for i in range(len(self.flota)):
-            new_state.flota[i].origen = self.flota[i].origen
-            new_state.flota[i].primera_est = self.flota[i].primera_est
-            new_state.flota[i].segona_est = self.flota[i].segona_est
-            new_state.flota[i].bicis_carregades = self.flota[i].bicis_carregades
-            new_state.flota[i].bicis_primera = self.flota[i].bicis_primera
-            new_state.flota[i].bicis_segona = self.flota[i].bicis_segona
-
-        # Copy the stations attribute by attribute
-        new_state.estacions.num_bicicletas = self.estacions.num_bicicletas
-        new_state.estacions.rng = self.estacions.rng
-        new_state.estacions.lista_estaciones = []
-
-        for est in self.estacions.lista_estaciones:
-            new_est = Estacion(
-                est.coordX, est.coordY, est.num_bicicletas_no_usadas, est.num_bicicletas_next
-            )
-            new_state.estacions.lista_estaciones.append(new_est)
-
-        # Copy the origin stations
-        new_state.estacions_origen = set(self.estacions_origen)
-
         return new_state
-    
+   
+    def _repr__(self):
+        return f"Estat {self.Contador_Estats} amb {len(self.flota)} furgonetes"
 
-    def __repr__(self) -> str:
-        return f"Estat(Flota: {self.flota}, Estaciones: {len(self.estacions.lista_estaciones)}, Estaciones Origen: {self.estacions_origen})"
-    
     
     def __eq__(self, other: "Estat") -> bool:
         #Compara si dos estats son iguals.
@@ -81,7 +40,7 @@ class Estat(object):
     def genera_accions(self):
 
         if len(self.flota) < self.params.num_furgonetes:
-            yield Afegir_Furgoneta()
+            yield Afegir_Furgoneta(self.flota, self.estacions)
 
         # Per cada furgoneta amb dos destins, intentar intercanviar els destins
         for furgoneta in self.flota:
@@ -144,7 +103,8 @@ class Estat(object):
             for estacio_temporal in estacions_descarrega:
                 if furgoneta.segona_est and estacio_temporal != furgoneta.primera_est and estacio_temporal != furgoneta.segona_est and estacio_temporal not in self.estacions_origen:
                     if dist_estacions(estacio_origen, estacio_temporal) < dist_estacions(estacio_origen, furgoneta.segona_est):
-                        yield CanviaEst2(estacio_origen, furgoneta.primera_est, furgoneta.segona_est, estacio_temporal, self.estacions.lista_estaciones)
+                        yield CanviaEst1(estacio_origen, furgoneta.primera_est, furgoneta.segona_est, estacio_temporal, self.estacions.lista_estaciones)
+        
 
     def aplica_accions(self, action: Operadors):
         new_state = self.__copy__()
@@ -182,7 +142,7 @@ class Estat(object):
 
 
         elif isinstance(action, Afegir_Furgoneta):
-            if len(action.flota) < self.params.n_furgonetes:
+            if len(action.flota) < self.params.num_furgonetes:
                 estacio_origen = estacio_desti = estacio_desti2 = None
                 carrega = descarrega1 = descarrega2 = 0
 
@@ -450,7 +410,7 @@ def genera_estat_inicial_1(params: Parametres, estacions: Estaciones):
     iterador_est = iterar_estacions(estacions)
     flota = []
     estacions_origen = set()
-    for i in range(params.n_furgonetes):
+    for i in range(params.num_furgonetes):
         estacio_origen = next(iterador_est)
         estacions_origen.add(estacio_origen)
         carrega = estacio_origen.num_bicicletas_no_usadas
