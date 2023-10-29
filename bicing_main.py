@@ -51,7 +51,7 @@ for furgoneta in estat_inicial.flota:
         recorregut_furgo += dist_estacions(furgoneta.primera_est, furgoneta.segona_est)
     recorregut_total += recorregut_furgo
 
-print(f"\nEXPERIMENT 7: \nBenefici_inicial: {h_inicial}€ Benefici_final: {n.heuristica2()}€")
+print(f"\nEXPERIMENT 7: \nBenefici_inicial: {h_inicial}€ Benefici_final: {h_final}€")
 print(f"\nTemps: {total_time} ms")
 print(f"\nRecorregut: {recorregut_total} m")
 print(f"Nombre d'estats Generats: {Estat.Contador_Estats}")
