@@ -39,7 +39,7 @@ time_start = time.time()
 estat_inicial = genera_estat_inicial_0(params, estacions) #estat inicial bo = 2
 h_inicial = estat_inicial.heuristica2()
 n = hill_climbing(BicingProblem(estat_inicial))
-h_final = n.heuristica1()
+h_final = n.heuristica2()
 time_end = time.time()
 
 total_time = time_end - time_start
