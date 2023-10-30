@@ -42,7 +42,6 @@ class Estat(object):
         llargada = len(self.flota) + 1
         num_max = self.params.num_furgonetes
         while llargada <= (num_max-1):
-            print (len(self.flota))
             yield Afegir_Furgoneta(self.flota, self.estacions)
             llargada = len(self.flota) + 1
 
