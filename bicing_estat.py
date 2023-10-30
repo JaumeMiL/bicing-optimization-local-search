@@ -18,7 +18,6 @@ class Estat(object):
     def __copy__(self):
         new_state = Estat(self.params, deepcopy(self.flota), deepcopy(self.estacions), deepcopy(self.estacions_origen))
 
-        # Copy the contador_estats
         new_state.Contador_Estats = self.Contador_Estats
 
         return new_state
@@ -46,9 +45,9 @@ class Estat(object):
             print (len(self.flota))
             yield Afegir_Furgoneta(self.flota, self.estacions)
             llargada = len(self.flota) + 1
-    
+
         
-        # Per cada furgoneta amb dos destins, intentar intercanviar els destins
+        
         for furgoneta in self.flota:
             if furgoneta.primera_est is not None and furgoneta.segona_est is not None:
                 yield Intercanviar_Estacions(furgoneta.origen, furgoneta.primera_est, furgoneta.segona_est)
@@ -92,12 +91,10 @@ class Estat(object):
                 if furgoneta.segona_est and estacio_temporal != furgoneta.primera_est and estacio_temporal != furgoneta.segona_est and estacio_temporal not in self.estacions_origen:
                     if dist_estacions(estacio_origen, estacio_temporal) < dist_estacions(estacio_origen, furgoneta.segona_est):
                         yield CanviaEst1(estacio_origen, furgoneta.primera_est, furgoneta.segona_est, estacio_temporal, self.estacions.lista_estaciones)
-        
+
     
     def aplica_accions(self, action: Operadors):
         new_state = self.__copy__()
-        print("Acció aplicada: ", action)
-        print("Estat actual: ", new_state)
 
         def find_furgoneta_by_origen(estacio_origen):
             for furgoneta in new_state.flota:
@@ -231,7 +228,8 @@ class Estat(object):
             estacio_desti = action.estacio_desti
             estacio_desti2 = action.estacio_desti2
             furgoneta = find_furgoneta_by_origen(estacio_origen)
-
+            
+            #Si pot carregar dos bicis més les carrega
             if estacio_origen.num_bicicletas_no_usadas >= 2 or (estacio_origen.num_bicicletas_no_usadas >= 1 and estacio_desti2 == None):
                 if furgoneta is not None:
                     if estacio_desti2 is None:
@@ -247,6 +245,8 @@ class Estat(object):
             estacio_desti = action.estacio_desti
             estacio_desti2 = action.estacio_desti2
             furgoneta = find_furgoneta_by_origen(estacio_origen)
+
+
             if furgoneta is not None:
                 if (furgoneta.bicis_primera >= 1 and furgoneta.bicis_segona >= 1) or (furgoneta.bicis_primera >= 1 and estacio_desti2 == None):
                     
@@ -263,6 +263,8 @@ class Estat(object):
             estacio_desti = action.estacio_desti
             estacio_desti2 = action.estacio_desti2
             furgoneta = find_furgoneta_by_origen(estacio_origen)
+
+            #Si pot deixa una bici de les que havia de deixar a l'estació 1 a la 2
             if furgoneta is not None:
                 if estacio_desti != None and estacio_desti2 != None and furgoneta.bicis_primera >= 1:
                     furgoneta.bicis_primera -= 1
@@ -273,12 +275,14 @@ class Estat(object):
             estacio_desti = action.estacio_desti
             estacio_desti2 = action.estacio_desti2
             furgoneta = find_furgoneta_by_origen(estacio_origen)
+
+            #Si pot deixa una bici de les que havia de deixar a l'estació 2 a la 1
             if furgoneta is not None:
                 if estacio_desti != None and estacio_desti2 != None and furgoneta.bicis_segona >= 1:
                     furgoneta.bicis_primera += 1
                     furgoneta.bicis_segona -= 1
             
-            #trobar la furgoneta dins flota i actualitzar-la
+            
 
         elif isinstance (action, CanviaEst1):
             estacio_origen = action.estacio_origen
@@ -289,7 +293,7 @@ class Estat(object):
             estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
             estacio_nova = None
             
-
+            #Canvia el primer destí on la furgoneta deixarà bicis
             if furgoneta is not None:
                 for estacio_temporal in estacions_descarrega:
                     if estacio_temporal != estacio_desti and estacio_temporal != estacio_desti2 and estacio_temporal not in self.estacions_origen:
@@ -299,7 +303,7 @@ class Estat(object):
                 if estacio_nova is not None:
                     furgoneta.primera_est = estacio_nova
                     estacio_desti = estacio_nova
-            #Descarreguem les bicis a l'estació que està més a prop, que no sigui ni l'estació destí ni l'estació destí2 i que tingui demanda
+    
             
         elif isinstance (action, CanviaEst2):
             estacio_origen = action.estacio_origen
@@ -310,6 +314,8 @@ class Estat(object):
             estacions_ordenades = sorted(action.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
             estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
             estacio_nova = None
+
+            #Canvia el segon destí on la furgoneta deixarà bicis
 
             if furgoneta is not None and estacio_desti2 is not None:
                 for estacio_temporal in estacions_descarrega:
@@ -337,7 +343,6 @@ class Estat(object):
                 
                 if estacio_nova is not None:
                     furgoneta.primera_est = estacio_nova
-                    #hem de carregar la furgoneta
                     if (estacio_nova.demanda > estacio_nova.num_bicicletas_no_usadas):
                         furgoneta.bicis_primera = estacio_origen.num_bicicletas_no_usadas
                         furgoneta.bicis_carregades += estacio_origen.num_bicicletas_no_usadas
@@ -345,13 +350,15 @@ class Estat(object):
                         furgoneta.bicis_primera = estacio_nova.demanda
                         furgoneta.bicis_carregades += estacio_nova.demanda
 
-#Només es pot afegir segona estació si ja hi ha la primera estació
+
         elif isinstance (action, AfegirEst2):
             estacio_origen = action.estacio_origen
             furgoneta = find_furgoneta_by_origen(estacio_origen)
             estacions_ordenades = sorted(action.lista_estaciones, key=lambda est: est.num_bicicletas_next - est.demanda, reverse=True)
             estacions_descarrega = [est for est in estacions_ordenades if est.num_bicicletas_next < est.demanda]
             estacio_nova = None
+
+            #Només es pot afegir segona estació si ja hi ha la primera estació
 
             if furgoneta is not None and furgoneta.primera_est is not None:
                 for estacio_temporal in estacions_descarrega:
