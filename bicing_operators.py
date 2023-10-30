@@ -3,19 +3,6 @@ from abia_bicing import Estacion
 
 class Operadors:
     pass
-
-class DescarregarBicis(Operadors):
-    def __init__(self, estacio_origen: int, estacio_desti: int, estacio_desti2: int = None):
-        self.estacio_origen = estacio_origen
-        self.estacio_desti = estacio_desti
-        self.estacio_desti2 = estacio_desti2
-        self.flota = flota
-            
-    def __repr__(self) -> str:
-        if self.estacio_desti2:
-            return f"Descarrega bicis a l'estació {self.estacio_desti} i {self.estacio_desti2}"
-        else:
-            return f"Descarrega bicis a l'estació {self.estacio_desti}"
          
 
 class Intercanviar_Estacions(Operadors):
