@@ -7,7 +7,7 @@ from bicing_problem import BicingProblem1, BicingProblem2
 from bicing_estat import genera_estat_inicial_1, genera_estat_inicial_0, genera_estat_inicial_2, Estat, dist_estacions
 
 print("Escull quin experiment vols fer introduïnt el número corresponent a la llista que tens a baix")
-print("1: Experiment 1, 2: Experiment 2, 3: Experiment 3, 4: Experiment 4, 5: Experiment 5, 6: Experiment 6, 7: Experiment Especial")
+print(" 1: Experiment 1 \n 2: Experiment 2 \n 3: Experiment 3 \n 4: Experiment 4 \n 5: Experiment 5 \n 6: Experiment 6 \n 7: Experiment Especial")
 valor = int(input())
 
 
@@ -148,10 +148,32 @@ elif valor == 3 or valor == 5:
     print(f"Malauradament al dedicar tant de temps a intentar trobar l'error del nostre Hill Climbing, no hem implementar correctament el Simmulated Annealing cosa que no ens ha permès fer els experiments relacionats amb aquesta tècnica.")
 
 elif valor == 4:
-    pass
+    print(f"\nEXPERIMENT 4: Evolució del temps d'execució en funció del nombre d'estacions, furgonetes i bicicletes\n")
+
+    max_estacions = 200  
+    increment_estacions = 25
+
+    for estacions_actuals in range(25, max_estacions + 1, increment_estacions):
+        bicis_actuals = estacions_actuals * 50
+        furgonetes_actuals = estacions_actuals // 5
+        
+        print(f"\nAmb {estacions_actuals} estacions, {furgonetes_actuals} furgonetes i {bicis_actuals} bicicletes:\n")
+        
+        params = Parametres(estacions_actuals, bicis_actuals, random.randint(1, 25000), furgonetes_actuals, 30)
+        estacions = Estaciones(params.n_estacions, params.n_bicis, params.llavor)
+        
+        time_start = time.time()
+        estat_inicial = genera_estat_inicial_0(params, estacions) 
+        
+        n = hill_climbing(BicingProblem1(estat_inicial))
+        time_end = time.time()
+        
+        total_time = time_end - time_start
+        print(f"Temps d'execució amb {estacions_actuals} estacions: {total_time} ms\n")
+
 
 elif valor == 6:
-    pass
+    print(f"\nEXPERIMENT 6 \n")
 
 elif valor == 7:
     print(f"\nEXPERIMENT ESPECIAL: \n")
@@ -177,7 +199,7 @@ elif valor == 7:
             recorregut_furgo += dist_estacions(furgoneta.primera_est, furgoneta.segona_est)
         recorregut_total += recorregut_furgo
 
-    print(f"\nEXPERIMENT ESPECIAL: \nBenefici_inicial: {h_inicial}€ Benefici_final: {h_final}€")
+    print(f"\nBenefici_inicial: {h_inicial}€ Benefici_final: {h_final}€")
     print(f"\nTemps total del problema: {total_time} ms")
     print(f"\nRecorregut total de les furgonetes: {recorregut_total} m")
     print(f"Nombre d'estats generats: {Estat.Contador_Estats}")

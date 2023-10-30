@@ -405,7 +405,7 @@ def genera_estat_inicial_1(params: Parametres, estacions: Estaciones):
     for i in range(params.num_furgonetes):
         estacio_origen = next(iterador_est)
         estacions_origen.add(estacio_origen)
-        carrega = estacio_origen.num_bicicletas_no_usadas
+        carrega = min(estacio_origen.num_bicicletas_no_usadas, params.max_bicicletes)
         primera_est = next(iterador_est)
         bicis_primera = carrega//2
         segona_est = next(iterador_est)
