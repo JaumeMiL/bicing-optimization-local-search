@@ -14,7 +14,7 @@ This project involves the implementation of local search algorithms, specificall
 ### Execution 🚀
 1. Ensure Python and necessary libraries are installed.
 2. Run the scripts provided in the `py files`.
-3. Review `Documentació.pdf` for detailed documentation of the project's methodology and results.
+3. Review `Local_search_algorithms_report.pdf` for detailed documentation of the project's methodology and results.
 
 ### Documentation 📄
 - **py files**: Contains all source code and executable scripts.
