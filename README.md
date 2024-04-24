@@ -13,12 +13,12 @@ This project involves the implementation of local search algorithms, specificall
 
 ### Execution 🚀
 1. Ensure Python and necessary libraries are installed.
-2. Run the scripts provided in the `codi_font.zip`.
+2. Run the scripts provided in the `py files`.
 3. Review `Documentació.pdf` for detailed documentation of the project's methodology and results.
 
 ### Documentation 📄
-- **codi_font.zip**: Contains all source code and executable scripts.
-- **Documentació.pdf**: Comprehensive documentation detailing the project setup, execution, and results.
+- **py files**: Contains all source code and executable scripts.
+- **Local_search_algorithms_report.pdf**: Comprehensive documentation detailing the project setup, execution, and results.
 
 ### Conclusion 📝
 The project successfully applies local search techniques to a practical problem, highlighting the efficiency of these algorithms in optimizing real-world tasks.
